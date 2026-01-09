@@ -16,6 +16,10 @@ const PartSchema = new mongoose.Schema({
         unique: true,
         uppercase: true
     },
+    imageUrl: {
+        type: String,
+        default: '/img/unnamed.jpg' // Default ke background jika kosong
+    },
     stock: {
         type: Number,
         required: [true, 'Stok wajib diisi'],

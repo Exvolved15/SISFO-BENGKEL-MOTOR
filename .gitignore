@@ -16,11 +16,11 @@ jspm_packages/
 !package.json
 !package-lock.json
 
-# Uploads & User Data
+# Uploads & User Data (File yang diupload saat testing tidak perlu ikut)
 public/uploads/
 uploads/
 
-# Abaikan hanya foto profil di dalam img, tapi biarkan aset utama tetap ikut
+# Abaikan foto profil hasil upload, tapi biarkan aset utama tetap ikut
 public/img/profile-*
 public/img/unnamed.jpg_backup
 
@@ -38,9 +38,10 @@ desktop.ini
 # IDE/Editor folders
 .vscode/
 .idea/
+.history/    <-- TAMBAHKAN INI (Mengabaikan Local History VS Code)
 *.swp
 *.swo
 
-# Build/Dist folders (Jika Anda menggunakan compiler)
+# Build/Dist folders
 dist/
 build/

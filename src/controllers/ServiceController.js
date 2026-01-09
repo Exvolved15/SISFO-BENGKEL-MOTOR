@@ -1,4 +1,4 @@
-// src/controllers/ServiceController.js
+// [LOKASI]: src/controllers/ServiceController.js
 const Service = require('../models/Service');
 
 // @desc    Mengambil semua layanan (Jasa & Suku Cadang)
@@ -11,32 +11,22 @@ const getServices = async (req, res) => {
     }
 };
 
-// @desc    Membuat layanan baru (Fungsi yang tadi Error)
-// src/controllers/ServiceController.js
-
 const createService = async (req, res) => {
     try {
-        // Ambil data dari body (pastikan name pada input HTML sesuai)
         const { name, code, price, description, isPart } = req.body;
-
-        // Validasi manual tambahan jika perlu sebelum masuk ke skema
         if (!name || !code) {
             throw new Error('Nama dan Kode Jasa tidak boleh kosong');
         }
-
         const newService = await Service.create({
             name,
             code,
             price: parseFloat(price),
             description,
-            isPart: isPart === 'true' || isPart === true, // Default false untuk Jasa
-            stock: 0 // Jasa biasanya tidak memiliki stok
+            isPart: isPart === 'true' || isPart === true,
+            stock: 0 
         });
-
-        // Jika berhasil, arahkan kembali ke daftar atau kirim JSON sukses
         res.redirect('/services'); 
     } catch (error) {
-        // Error validation Mongoose akan ditangkap di sini
         res.status(400).send(`Tambah Jasa Gagal: ${error.message}. <a href="/services/add">Kembali ke Form</a>`);
     }
 };
@@ -53,7 +43,7 @@ const getServiceById = async (req, res) => {
     }
 };
 
-// 1. Fungsi menampilkan halaman edit
+// TAMBAHKAN: Fungsi menampilkan halaman edit
 const getEditPage = async (req, res) => {
     try {
         const service = await Service.findById(req.params.id);
@@ -62,6 +52,7 @@ const getEditPage = async (req, res) => {
         res.render('services/edit', { 
             title: 'Edit Jasa Servis', 
             service: service, 
+            user: req.user,
             activePage: 'services' 
         });
     } catch (error) {
@@ -69,48 +60,56 @@ const getEditPage = async (req, res) => {
     }
 };
 
-// 2. Fungsi memproses update
+// TAMBAHKAN: Fungsi memproses update
 const updateService = async (req, res) => {
     try {
         const { name, code, price, description } = req.body;
+        
+        // Gunakan { new: true } agar Mongoose mengembalikan data terbaru jika perlu log
         await Service.findByIdAndUpdate(req.params.id, {
             name,
-            code,
+            code: code.toUpperCase(), // Pastikan kode selalu besar
             price: parseFloat(price),
-            description
-        });
-        res.redirect('/services'); 
+            description: description || '' // Pastikan string kosong jika tidak diisi
+        }, { runValidators: true });
+
+        res.redirect('/services?success=Jasa+berhasil+diperbarui'); 
     } catch (error) {
+        console.error("Update Service Error:", error.message);
         res.status(400).send("Gagal update: " + error.message);
     }
 };
 
-// 3. Fungsi lainnya (misal: getAllServices)
+
 const getAllServices = async (req, res) => {
     try {
-        const services = await Service.find();
-        res.render('services/list', { services });
+        const services = await Service.find().sort({ name: 1 });
+        res.render('services/list', { 
+            title: 'Daftar Jasa Layanan',
+            services, 
+            user: req.user, 
+            activePage: 'services' 
+        });
     } catch (error) {
         res.status(500).send(error.message);
     }
 };
-// @desc    Menghapus layanan
+
 const deleteService = async (req, res) => {
     try {
         const service = await Service.findByIdAndDelete(req.params.id);
         if (!service) return res.status(404).json({ success: false, message: 'Data tidak ditemukan' });
-        res.status(200).json({ success: true, message: 'Data berhasil dihapus' });
+        res.redirect('/services?delete=success');
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-// Pastikan semua fungsi diekspor dengan benar
 module.exports = {
     getServices,
     createService,
     getServiceById,
-    getEditPage,    // Nama ini harus sama dengan yang dipanggil di rute
+    getEditPage,    
     updateService,
     getAllServices,
     deleteService

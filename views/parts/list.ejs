@@ -1,11 +1,12 @@
-<div class="container-fluid px-4 py-4 animate-fade-in">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+<div class="container-fluid px-4 py-4 animate-fade-in  min-vh-100">
+    
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 p-4 rounded-4 bg-white shadow-sm border-start border-5 border-success">
         <div>
             <h1 class="h3 fw-bold text-dark mb-1"><%= title %></h1>
-            <p class="text-muted mb-0">Kelola ketersediaan suku cadang dan pantau harga inventory bengkel.</p>
+            <p class="text-secondary mb-0 fw-medium">Kelola ketersediaan suku cadang dan pantau harga inventory bengkel.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="/parts/add" class="btn btn-success px-4 py-2 fw-bold rounded-3 shadow-sm btn-emerald">
+            <a href="/parts/add" class="btn btn-success px-4 py-2 fw-bold rounded-pill shadow btn-emerald">
                 <i class="fas fa-plus-circle me-2"></i>Tambah Suku Cadang
             </a>
         </div>
@@ -13,69 +14,69 @@
 
     <div class="row g-3 mb-4">
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-primary">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-bottom border-4 border-primary h-100 transition-all hover-lift">
                 <div class="d-flex align-items-center">
-                    <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-3 p-3 me-3">
+                    <div class="icon-box bg-primary text-white rounded-4 p-3 me-3 shadow-sm">
                         <i class="fas fa-boxes fa-xl"></i>
                     </div>
                     <div>
-                        <h6 class="text-muted small mb-1">Total Jenis Barang</h6>
-                        <h4 class="fw-bold mb-0"><%= parts.length %></h4>
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Total Jenis</h6>
+                        <h4 class="fw-black mb-0 text-dark"><%= parts.length %> <span class="small fw-normal text-muted">Item</span></h4>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <% const lowStockCount = parts.filter(p => p.stock <= 5).length; %>
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-danger">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-bottom border-4 border-danger h-100 transition-all hover-lift">
                 <div class="d-flex align-items-center">
-                    <div class="icon-box bg-danger bg-opacity-10 text-danger rounded-3 p-3 me-3">
+                    <div class="icon-box bg-danger text-white rounded-4 p-3 me-3 shadow-sm">
                         <i class="fas fa-exclamation-triangle fa-xl"></i>
                     </div>
                     <div>
-                        <h6 class="text-muted small mb-1">Stok Menipis (≤ 5)</h6>
-                        <h4 class="fw-bold mb-0 text-danger"><%= lowStockCount %> <span class="small fw-normal text-muted">Item</span></h4>
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Stok Kritis</h6>
+                        <h4 class="fw-black mb-0 text-danger"><%= lowStockCount %> <span class="small fw-normal text-muted">Perlu Order</span></h4>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-success">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-bottom border-4 border-success h-100 transition-all hover-lift">
                 <div class="d-flex align-items-center">
-                    <div class="icon-box bg-success bg-opacity-10 text-success rounded-3 p-3 me-3">
+                    <div class="icon-box bg-success text-white rounded-4 p-3 me-3 shadow-sm">
                         <i class="fas fa-file-invoice-dollar fa-xl"></i>
                     </div>
                     <div>
-                        <h6 class="text-muted small mb-1">Nilai Inventaris (Jual)</h6>
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Nilai Gudang</h6>
                         <% const totalValue = parts.reduce((acc, p) => acc + ((p.sellingPrice || 0) * p.stock), 0); %>
-                        <h4 class="fw-bold mb-0">Rp <%= totalValue.toLocaleString('id-ID') %></h4>
+                        <h4 class="fw-black mb-0 text-success">Rp <%= totalValue.toLocaleString('id-ID') %></h4>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-header bg-white py-3 border-bottom border-light">
+    <div class="card border-0 shadow rounded-4 overflow-hidden">
+        <div class="card-header bg-dark py-3">
             <div class="row align-items-center">
                 <div class="col">
-                    <h6 class="mb-0 fw-bold"><i class="fas fa-warehouse me-2 text-success"></i>Daftar Inventaris Gudang</h6>
+                    <h6 class="mb-0 fw-bold text-white"><i class="fas fa-warehouse me-2 text-success"></i>Daftar Inventaris Gudang</h6>
                 </div>
                 <div class="col-auto">
-                    <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border">
-                        <span class="input-group-text bg-white border-0"><i class="fas fa-search text-muted"></i></span>
-                        <input type="text" id="partSearch" class="form-control border-0 ps-0" placeholder="Cari kode atau nama barang...">
+                    <div class="input-group input-group-sm rounded-pill overflow-hidden border-0 bg-secondary bg-opacity-25" style="width: 250px;">
+                        <span class="input-group-text bg-transparent border-0"><i class="fas fa-search text-white"></i></span>
+                        <input type="text" id="partSearch" class="form-control bg-transparent border-0 text-white placeholder-light" placeholder="Cari barang...">
                     </div>
                 </div>
             </div>
         </div>
-        <div class="card-body p-0">
+        <div class="card-body p-0 bg-white">
             <% if (parts.length > 0) { %>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0" id="partTable">
-                        <thead class="table-light">
-                            <tr class="small text-uppercase fw-bold text-muted">
-                                <th class="ps-4">Preview</th>
+                        <thead class="bg-light">
+                            <tr class="small text-uppercase fw-bold text-dark border-bottom">
+                                <th class="ps-4 py-3">Preview</th>
                                 <th>Suku Cadang</th>
                                 <th class="text-center">Stok</th>
                                 <th>Harga Beli</th>
@@ -86,33 +87,54 @@
                         </thead>
                         <tbody>
                             <% parts.forEach(part => { %>
-                                <tr>
+                                <tr class="border-bottom">
                                     <td class="ps-4">
-                                        <button class="btn btn-sm btn-outline-success rounded-3" 
-                                                onclick="openImagePreview('<%= part.name %>', '<%= part.image || '/img/default-part.png' %>')">
-                                            <i class="fas fa-image"></i> Preview
-                                        </button>
+                                        <% 
+                                            let displayImg = '/img/unnamed.jpg';
+                                            if (part.imageUrl) { displayImg = part.imageUrl; }
+                                        %>
+                                        <div class="position-relative overflow-hidden rounded-3 shadow-sm border" style="width: 65px; height: 65px; cursor: pointer;" 
+                                             onclick="openImagePreview('<%= part.name %>', '<%= displayImg %>')">
+                                            <img src="<%= displayImg %>" class="w-100 h-100 object-fit-cover" alt="part">
+                                            <div class="preview-overlay">
+                                                <i class="fas fa-eye text-white"></i>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
-                                        <div class="fw-bold text-dark"><%= part.name %></div>
-                                        <span class="badge bg-light text-dark border font-monospace small"><%= part.code %></span>
+                                        <div class="fw-bold text-dark fs-6 mb-0"><%= part.name %></div>
+                                        <code class="text-primary small fw-bold"><%= part.code %></code>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge <%= part.stock <= 5 ? 'bg-danger pulse-danger' : (part.stock <= 15 ? 'bg-warning text-dark' : 'bg-success') %> rounded-pill px-3 shadow-sm">
-                                            <%= part.stock %>
-                                        </span>
+                                        <div class="d-inline-block px-3 py-1 rounded-pill fw-bold small shadow-sm 
+                                            <%= part.stock <= 5 ? 'bg-danger text-white pulse-danger' : (part.stock <= 15 ? 'bg-warning text-dark' : 'bg-success text-white') %>">
+                                            <%= part.stock %> Pcs
+                                        </div>
                                     </td>
-                                    <td class="text-muted small">Rp <%= (part.purchasePrice || 0).toLocaleString('id-ID') %></td>
-                                    <td class="fw-bold text-success">Rp <%= (part.sellingPrice || 0).toLocaleString('id-ID') %></td>
-                                    <td><small class="text-muted"><%= part.supplier || '-' %></small></td>
+                                    <td>
+    <div class="d-flex align-items-center">
+        <span class="badge bg-light text-dark border-0 fw-bold px-2 py-1 shadow-sm" style="font-family: 'Inter', sans-serif; font-size: 0.85rem;">
+            Rp <%= (part.purchasePrice || 0).toLocaleString('id-ID') %>
+        </span>
+    </div>
+</td>
+
+<td>
+    <div class="d-flex align-items-center">
+        <span class="text-dark fw-bold" style="font-family: 'Inter', sans-serif; font-size: 0.95rem;">
+            Rp <%= (part.sellingPrice || 0).toLocaleString('id-ID') %>
+        </span>
+    </div>
+</td>
+                                    <td><span class="text-secondary small fw-medium"><i class="fas fa-truck-field me-1"></i><%= part.supplier || '-' %></span></td>
                                     <td class="text-center pe-4">
-                                        <div class="btn-group shadow-sm rounded-3">
-                                            <a href="/api/parts/<%= part._id %>/edit" class="btn btn-sm btn-white border border-light">
-                                                <i class="fas fa-edit text-warning"></i>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <a href="/parts/<%= part._id %>/edit" class="btn btn-sm btn-outline-warning border-2 rounded-3 hover-shake">
+                                                <i class="fas fa-edit"></i>
                                             </a>
                                             <form action="/api/parts/delete/<%= part._id %>?_method=DELETE" method="POST" class="d-inline">
-                                                <button type="submit" class="btn btn-sm btn-white border border-light" onclick="return confirm('Hapus data?');">
-                                                    <i class="fas fa-trash-alt text-danger"></i>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger border-2 rounded-3 hover-shake" onclick="return confirm('Hapus data?');">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -122,63 +144,47 @@
                         </tbody>
                     </table>
                 </div>
+            <% } else { %>
+                <div class="text-center py-5">
+                    <img src="/img/empty-box.png" class="mb-3 opacity-50" style="width: 100px;">
+                    <h5 class="text-muted">Gudang Kosong</h5>
+                    <p class="small text-secondary">Silakan tambahkan suku cadang baru.</p>
+                </div>
             <% } %>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
-            <div class="modal-header bg-success text-white border-0 py-3">
-                <h6 class="modal-title fw-bold" id="modalPartName">Detail Gambar</h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4 text-center bg-light">
-                <div class="rounded-3 overflow-hidden shadow-sm bg-white p-2">
-                    <img id="modalPartImage" src="" class="img-fluid" style="max-height: 400px; width: 100%; object-fit: contain;">
-                </div>
-                <button type="button" class="btn btn-secondary w-100 rounded-3 mt-4 fw-bold" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <style>
-    /* CSS Khusus Inventory */
-    .font-monospace { font-family: 'Courier New', Courier, monospace; letter-spacing: 1px; }
-    .btn-white { background: #fff; }
-    .btn-white:hover { background: #f8f9fa; }
+    /* Tipografi & Kontras */
+    .fw-black { font-weight: 900; }
+    .placeholder-light::placeholder { color: rgba(255,255,255,0.7); }
     
-    .btn-emerald { background-color: #2ecc71; border: none; transition: 0.3s; color: white; }
-    .btn-emerald:hover { background-color: #27ae60; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); color: white; }
-
-    /* Animasi stok kritis */
-    .pulse-danger {
-        animation: pulse-red 2s infinite;
+    /* Hover Effects */
+    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+    .hover-shake:hover { transform: scale(1.1); transition: 0.2s; }
+    
+    /* Overlay Gambar */
+    .preview-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: 0.3s;
     }
+    .position-relative:hover .preview-overlay { opacity: 1; }
+
+    /* Custom Scrollbar untuk Table */
+    .table-responsive::-webkit-scrollbar { height: 6px; }
+    .table-responsive::-webkit-scrollbar-thumb { background: #2ecc71; border-radius: 10px; }
+
+    /* Badge & Animation */
+    .pulse-danger { animation: pulse-red 2s infinite; }
     @keyframes pulse-red {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+        70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
     }
 
-    .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .bg-emerald-gradient { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 </style>
-
-<script>
-    function openImagePreview(name, url) {
-        document.getElementById('modalPartName').innerText = name;
-        document.getElementById('modalPartImage').src = url;
-        new bootstrap.Modal(document.getElementById('imagePreviewModal')).show();
-    }
-
-    document.getElementById('partSearch').addEventListener('keyup', function() {
-        let value = this.value.toLowerCase();
-        let rows = document.querySelectorAll("#partTable tbody tr");
-        rows.forEach(row => {
-            row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
-        });
-    });
-</script>

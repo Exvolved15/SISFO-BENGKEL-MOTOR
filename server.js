@@ -1,4 +1,3 @@
-// [LOKASI]: server.js
 require('dotenv').config(); 
 const mongoose = require('mongoose');
 const express = require('express');
@@ -10,25 +9,19 @@ const helmet = require('helmet');
 const jwt = require('jsonwebtoken');
 const connectDB = require('./src/config/db'); 
 
-// 1. IMPORT UTILITY SYNC FIREBASE
 const { syncToFirebase } = require('./src/utils/firebaseSync');
 
-// ==================================================================
-// 2. PASANG MONGOOSE PLUGIN (Sinkronisasi Realtime MongoDB -> Firebase)
-// ==================================================================
 mongoose.plugin((schema) => {
     schema.post('save', function(doc) {
         const collection = this.constructor.modelName.toLowerCase();
         syncToFirebase(collection, doc);
     });
-
     schema.post('findOneAndUpdate', function(doc) {
         if (doc) {
             const collection = doc.constructor.modelName.toLowerCase();
             syncToFirebase(collection, doc);
         }
     });
-
     schema.post('findOneAndDelete', async function(doc) {
         if (doc) {
             const collection = doc.constructor.modelName.toLowerCase();
@@ -42,20 +35,16 @@ mongoose.plugin((schema) => {
     });
 });
 
-// ==================================================================
-// 3. IMPORT MODEL & KONEKSI
-// ==================================================================
 connectDB(); 
 const User = require('./src/models/User');
-const Part = require('./src/models/Part'); // Pastikan model Part di-import
+const Part = require('./src/models/Part');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ===================================
-// 4. MIDDLEWARE KEAMANAN (HELMET & CSP)
+// 4. MIDDLEWARE KEAMANAN (FIX CSP)
 // ===================================
-// [LOKASI]: server.js
 app.use(
     helmet({
       contentSecurityPolicy: {
@@ -64,11 +53,11 @@ app.use(
           "script-src": [
             "'self'", 
             "'unsafe-inline'", 
-            "'unsafe-eval'", // Diperlukan oleh beberapa library Google Maps
+            "'unsafe-eval'", 
             "https://cdn.jsdelivr.net", 
             "https://www.gstatic.com", 
             "https://unpkg.com",
-            "https://maps.googleapis.com", // WAJIB untuk Gmaps
+            "https://maps.googleapis.com", 
             "https://*.googleapis.com"
           ],
           "script-src-attr": ["'unsafe-inline'"],
@@ -77,17 +66,20 @@ app.use(
             "http://localhost:5000",
             "https://cdn.jsdelivr.net",
             "https://*.googleapis.com",
+            "https://api.qrserver.com",
             "https://*.firebasedatabase.app",
-            "https://*.google.com", // WAJIB untuk Gmaps API
+            "https://*.google.com", 
             "https://maps.gstatic.com"
           ],
           "img-src": [
-            "'self'", 
+            "'self'",         // PENTING: Izinkan gambar dari server sendiri
             "data:", 
+            "blob:",
+            "https://api.qrserver.com",
             "https://images.unsplash.com", 
             "https://*.googleusercontent.com",
-            "https://maps.gstatic.com", // WAJIB untuk Tile Peta
-            "https://*.googleapis.com", // WAJIB untuk Marker/Tile
+            "https://maps.gstatic.com", 
+            "https://*.googleapis.com", 
             "https://*.google.com",
             "https://*", 
             "http://*"
@@ -99,13 +91,13 @@ app.use(
             "https://fonts.googleapis.com", 
             "https://cdnjs.cloudflare.com",
             "https://unpkg.com",
-            "https://*.googleapis.com" // WAJIB untuk style Gmaps
+            "https://*.googleapis.com"
           ],
           "font-src": ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
           "frame-src": [
             "'self'", 
             "https://www.google.com", 
-            "https://maps.google.com" // WAJIB jika menggunakan Iframe Gmaps
+            "https://maps.google.com"
           ],
         },
       },
@@ -118,7 +110,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(cookieParser());
+
+// FIX: Urutan static files
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public'))); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(expressLayouts); 
@@ -126,9 +121,6 @@ app.set('layout', './layouts/main');
 app.set('view engine', 'ejs'); 
 app.set('views', path.join(__dirname, 'views'));
 
-// ===================================
-// 5. MIDDLEWARE GLOBAL (USER SESSION)
-// ===================================
 app.use(async (req, res, next) => {
     res.locals.user = null;
     res.locals.activePage = ''; 
@@ -148,9 +140,6 @@ app.use(async (req, res, next) => {
     next();
 });
 
-// ===================================
-// 6. PENDAFTARAN ROUTES
-// ===================================
 const { protect } = require('./src/middleware/authMiddleware');
 const authRoutes = require('./src/routes/authRoutes'); 
 const authViewRoutes = require('./src/routes/authViewRoutes');
@@ -160,7 +149,6 @@ const viewRoutes = require('./src/routes/viewRoutes');
 const mekanikViewRoutes = require('./src/routes/mekanikViewRoutes');
 const transactionRoutes = require('./src/routes/transactionRoutes');
 
-// Rute Auth & API
 app.use('/', authViewRoutes); 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', authRoutes);
@@ -168,10 +156,8 @@ app.use('/api/parts', protect, partRoutes);
 app.use('/api/services', protect, serviceRoutes); 
 app.use('/api/transactions', transactionRoutes);
 
-// SINKRONISASI LANDING PAGE (Daftar Staf Professional)
 app.get('/', async (req, res) => {
     try {
-        // Tarik data staf dari MongoDB agar muncul di index.ejs
         const staffList = await User.find({ 
             role: { $in: ['admin', 'mekanik', 'kasir'] } 
         }).limit(4);
@@ -186,7 +172,7 @@ app.get('/', async (req, res) => {
 
         res.render('index', { 
             title: 'ACR Motor', 
-            staffList: staffList, // Mengirim data ke Gambar 1 (Landing Page)
+            staffList: staffList, 
             activePage: 'home' 
         });
     } catch (error) {
@@ -198,7 +184,6 @@ app.get('/about', (req, res) => {
     res.render('about', { title: 'Tentang Kami', activePage: 'about' });
 });
 
-// Rute Tampilan Lainnya
 app.use('/', viewRoutes);
 app.use('/', protect, mekanikViewRoutes);
 

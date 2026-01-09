@@ -1,25 +1,29 @@
-// src/routes/partRoutes.js
-
+// [LOKASI]: src/routes/partRoutes.js
 const express = require('express');
 const router = express.Router();
-const Part = require('../models/Part');
-const partController = require('../controllers/PartController'); // Import controller (menggunakan p kecil)
+const partController = require('../controllers/PartController');
 const { protect, restrictTo } = require('../middleware/authMiddleware');
+const multer = require('multer');
+const path = require('path');
 
-// --- RUTE TAMPILAN (VIEW) ---
-// Pastikan menggunakan partController (p kecil) sesuai import di atas
+// Konfigurasi Multer untuk Spare Parts
+const storage = multer.diskStorage({
+    destination: 'public/uploads/parts/',
+    filename: (req, file, cb) => {
+        cb(null, 'part-' + Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage });
+
+// --- RUTE TAMPILAN ---
 router.get('/:id/edit', protect, restrictTo('admin'), partController.getEditPage);
 
-// --- RUTE PROSES (API/ACTION) ---
-// FIX: Ubah PartController menjadi partController agar tidak ReferenceError
-router.post('/add', protect, restrictTo('admin'), partController.createPartView);
+// --- RUTE PROSES ---
+// Tambahkan upload.single('partImage') pada rute POST dan PUT
+router.post('/add', protect, restrictTo('admin'), upload.single('partImage'), partController.createPartView);
+router.put('/:id', protect, restrictTo('admin'), upload.single('partImage'), partController.updatePart);
 
-// Rute untuk memproses update data (Gunakan PUT)
-router.put('/:id', protect, restrictTo('admin'), partController.updatePart);
-
-// [LOKASI]: src/routes/partRoutes.js
-
-// Update stok cepat dari dashboard
+// Update stok cepat
 router.post('/update-stock/:id', protect, restrictTo('admin'), async (req, res) => {
     try {
         const { adjustment } = req.body;

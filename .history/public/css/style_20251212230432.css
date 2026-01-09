@@ -1,9 +1,0 @@
-/* public/css/style.css */
-/* Contoh: override style bootstrap atau custom style lainnya */
-body {
-    background-color: #f8f9fa; /* Warna latar belakang ringan */
-}
-.container {
-    padding-top: 20px;
-    padding-bottom: 20px;
-}

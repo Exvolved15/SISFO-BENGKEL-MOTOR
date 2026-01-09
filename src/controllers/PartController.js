@@ -1,9 +1,6 @@
 // [LOKASI]: src/controllers/PartController.js
 const Part = require('../models/Part');
 
-// ------------------------------------
-// 1. Fungsi READ (GET ALL)
-// ------------------------------------
 const getAllParts = async (req, res) => {
     try {
         const parts = await Part.find({}).sort({ name: 1 });
@@ -21,56 +18,38 @@ const getAllParts = async (req, res) => {
     }
 };
 
-// ------------------------------------
-// 2. Fungsi CREATE (API & VIEW)
-// ------------------------------------
-
-// Untuk request dari API (JSON)
-const createPartApi = async (req, res) => {
-    try {
-        const part = await Part.create(req.body);
-        res.status(201).json({ success: true, data: part });
-    } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
-    }
-};
-
-// Untuk request dari Form (EJS) - FIX HARGA BELI & JUAL
-// [FIX] src/controllers/PartController.js
 const createPartView = async (req, res) => {
     try {
-        // 1. Tangkap semua data dari body (Pastikan nama variabel sesuai dengan atribut 'name' di EJS)
         const { name, code, purchasePrice, price, stock, supplier } = req.body;
-
-        // 2. Mapping ke Model Mongoose
-        const newPart = new Part({
-            name: name,
+        
+        // Mapping Model
+        const newPartData = {
+            name,
             code: code.toUpperCase(),
-            purchasePrice: parseFloat(purchasePrice), // Pastikan ini tidak null
-            sellingPrice: parseFloat(price),          // Memetakan 'price' dari form ke 'sellingPrice'
+            purchasePrice: parseFloat(purchasePrice),
+            sellingPrice: parseFloat(price),
             stock: parseInt(stock) || 0,
             supplier: supplier || '-'
-        });
+        };
 
+        // TAMBAH: Jika ada file upload
+        if (req.file) {
+            newPartData.imageUrl = `/uploads/parts/${req.file.filename}`;
+        }
+
+        const newPart = new Part(newPartData);
         await newPart.save();
         
-        // 3. Redirect kembali ke list dengan pesan sukses
         res.redirect('/parts?success=Suku+cadang+berhasil+ditambahkan');
-
     } catch (error) {
-        console.error("Validation Error:", error.message);
-        // Jika gagal, balikkan ke form dengan pesan error
         res.redirect(`/parts/add?error=${encodeURIComponent(error.message)}`);
     }
 };
-// ------------------------------------
-// 3. Fungsi UPDATE & EDIT PAGE
-// ------------------------------------
+
 const getEditPage = async (req, res) => {
     try {
         const part = await Part.findById(req.params.id);
         if (!part) return res.status(404).send("Suku cadang tidak ditemukan");
-
         res.render('parts/edit', { 
             title: 'Edit Suku Cadang', 
             part: part, 
@@ -85,26 +64,22 @@ const getEditPage = async (req, res) => {
 const updatePart = async (req, res) => {
     try {
         const { name, code, purchasePrice, sellingPrice, stock, supplier } = req.body;
-        
-        const updatedPart = await Part.findByIdAndUpdate(req.params.id, {
-            name,
-            code: code.toUpperCase(),
-            purchasePrice: parseFloat(purchasePrice),
-            sellingPrice: parseFloat(sellingPrice),
-            stock: parseInt(stock) || 0,
-            supplier: supplier || '-'
-        }, { new: true, runValidators: true });
+        let updateData = { name, code, purchasePrice, sellingPrice, stock, supplier };
 
-        if (!updatedPart) return res.status(404).send("Data tidak ditemukan.");
-        res.redirect('/parts?success=Data+berhasil+diperbarui');
+        // Pastikan path gambar masuk ke objek updateData
+        if (req.file) {
+            updateData.imageUrl = `/uploads/parts/${req.file.filename}`;
+        } else if (req.body.imageUrl) {
+            updateData.imageUrl = req.body.imageUrl;
+        }
+
+        await Part.findByIdAndUpdate(req.params.id, updateData);
+        res.redirect('/parts?success=Updated');
     } catch (error) {
-        res.redirect(`/api/parts/${req.params.id}/edit?error=${encodeURIComponent(error.message)}`);
+        res.redirect('/parts?error=' + error.message);
     }
 };
 
-// ------------------------------------
-// 4. Fungsi DELETE
-// ------------------------------------
 const deletePart = async (req, res) => {
     try {
         await Part.findByIdAndDelete(req.params.id);
@@ -114,17 +89,10 @@ const deletePart = async (req, res) => {
     }
 };
 
-// =====================================
-// EXPORTS (Sesuai dengan nama fungsi di atas)
-// =====================================
 module.exports = {
     getAllParts,
-    createPartApi: async (req, res) => { /* Placeholder API */ },
     createPartView,
-    getEditPage: async (req, res) => {
-        const part = await Part.findById(req.params.id);
-        res.render('parts/edit', { title: 'Edit Suku Cadang', part, user: req.user, activePage: 'parts' });
-    },
+    getEditPage,
     updatePart,
     deletePart
 };

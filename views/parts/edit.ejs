@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container py-5 animate-fade-in">
     <div class="row justify-content-center">
@@ -12,7 +13,7 @@
                 </div>
 
                 <div class="card-body p-4 p-md-5 bg-white">
-                    <form action="/api/parts/<%= part._id %>?_method=PUT" method="POST">
+                    <form action="/api/parts/<%= part._id %>?_method=PUT" method="POST" id="formEditPart" enctype="multipart/form-data">
                         <div class="row g-4 mb-4">
                             <div class="col-md-8">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Nama Suku Cadang</label>
@@ -26,6 +27,29 @@
                                 <div class="input-group shadow-sm border rounded-3 overflow-hidden">
                                     <span class="input-group-text bg-white border-0"><i class="fas fa-barcode text-success"></i></span>
                                     <input type="text" name="code" class="form-control border-0 py-2" value="<%= part.code %>" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Foto Suku Cadang</label>
+                                <div id="drop-zone" class="drop-zone rounded-4 border-2 border-dashed d-flex flex-column align-items-center justify-content-center p-4 bg-light">
+                                    
+                                    <div class="drop-zone-content text-center <%= part.imageUrl ? 'd-none' : '' %>" id="drop-zone-content">
+                                        <i class="fas fa-cloud-arrow-up fa-3x text-success mb-3"></i>
+                                        <h6 class="fw-bold text-dark">Ganti Foto Suku Cadang</h6>
+                                        <p class="text-muted small">Tarik foto baru ke sini</p>
+                                    </div>
+
+                                    <input type="file" name="partImage" id="partImage" class="d-none" accept="image/*">
+                                    
+                                    <div id="preview-container" class="mt-2 <%= part.imageUrl ? '' : 'd-none' %> text-center">
+                                        <img id="image-preview" src="<%= part.imageUrl ? part.imageUrl : '#' %>" alt="Preview" class="img-fluid rounded-3 shadow-sm border border-3 border-white" style="max-height: 180px;">
+                                        <div class="mt-2">
+                                            <p class="small text-muted mb-2 text-italic text-info">Klik area kotak untuk mengganti gambar</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -49,19 +73,17 @@
 
                         <div class="row g-4 mb-5">
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted text-uppercase text-danger">Harga Beli</label>
-                                <div class="input-group shadow-sm border-start border-4 border-danger rounded-3 overflow-hidden">
-                                    <span class="input-group-text bg-white border-0 fw-bold text-danger">Rp</span>
-                                    <input type="number" name="purchasePrice" class="form-control border-0 py-2" value="<%= part.purchasePrice %>" required>
+                                <label class="form-label fw-bold">Harga Beli</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="number" name="purchasePrice" id="purchasePrice" class="form-control" value="<%= part.purchasePrice %>" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small fw-bold text-muted text-uppercase text-success">Harga Jual</label>
-                                <div class="input-group shadow-sm border-start border-4 border-success rounded-3 overflow-hidden">
-                                    <span class="input-group-text bg-white border-0 fw-bold text-success">Rp</span>
-                                    <input type="hidden" name="_method" value="POST"> 
-    
-                                    <input type="number" name="sellingPrice" class="form-control" value="<%= part.sellingPrice %>" required>
+                                <label class="form-label fw-bold">Harga Jual</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="number" name="sellingPrice" id="sellingPrice" class="form-control" value="<%= part.sellingPrice %>" required>
                                 </div>
                             </div>
                         </div>
@@ -86,41 +108,40 @@
 </div>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('error')) {
-        Swal.fire({ icon: 'error', title: 'Gagal Update', text: urlParams.get('error') });
+    // Copy JavaScript Logic dari add.ejs (handle dropZone, showPreview)
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('partImage');
+    const previewContainer = document.getElementById('preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    const contentOriginal = document.getElementById('drop-zone-content');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length) { fileInput.files = files; showPreview(files[0]); }
+    });
+
+    fileInput.addEventListener('change', () => { if (fileInput.files.length) showPreview(fileInput.files[0]); });
+
+    function showPreview(file) {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.src = e.target.result;
+            previewContainer.classList.remove('d-none');
+            contentOriginal.classList.add('d-none');
+        };
+        reader.readAsDataURL(file);
     }
 </script>
 
 <style>
-    .bg-emerald-gradient {
-        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-    }
-
-    .form-control:focus {
-        box-shadow: none;
-        background-color: #fff !important;
-        border: 1px solid #2ecc71 !important;
-    }
-
-    .btn-emerald {
-        background-color: #2ecc71;
-        border: none;
-        transition: all 0.3s ease;
-    }
-
-    .btn-emerald:hover {
-        background-color: #27ae60;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3) !important;
-    }
-
-    .animate-fade-in {
-        animation: fadeIn 0.8s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    /* Gunakan Style yang sama dengan add.ejs */
+    .bg-emerald-gradient { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+    .drop-zone { cursor: pointer; border: 2px dashed #dee2e6; min-height: 180px; transition: 0.3s; }
+    .drop-zone:hover, .drop-zone.drag-over { border-color: #2ecc71; background: rgba(46, 204, 113, 0.05); }
+    .btn-emerald { background-color: #2ecc71; border: none; }
 </style>

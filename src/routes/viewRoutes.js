@@ -1,8 +1,8 @@
+// [LOKASI]: src/routes/viewRoutes.js
 const express = require('express');
 const router = express.Router();
 const { protect, restrictTo } = require('../middleware/authMiddleware');
 
-// IMPORT MODEL
 const Part = require('../models/Part'); 
 const Service = require('../models/Service'); 
 const PartController = require('../controllers/PartController');
@@ -14,21 +14,13 @@ const Motor = require('../models/Motor');
 const User = require('../models/User');
 const Job = require('../models/Job');
 
-// 1. RUTE PUBLIK (HOME)
 const { trackStatusPublic } = require('../controllers/TransactionController');
-router.get('/track-status', trackStatusPublic);
-
-
-// [LOKASI]: src/routes/viewRoutes.js
 
 router.get('/', async (req, res) => {
     try {
-        // FIX REDIRECT: Jika ada token atau user, paksa masuk ke dashboard-redirect
         if (req.cookies.jwt || req.cookies.token || req.user) {
             return res.redirect('/dashboard-redirect');
         }
-        
-        // Ambil data staff untuk tamu (guest) yang belum login
         const staff = await User.find({ 
             role: { $in: ['admin', 'kasir', 'mekanik'] } 
         }).select('name role profileImage status bio').lean();
@@ -56,10 +48,8 @@ router.get('/dashboard-redirect', protect, (req, res) => {
     return res.redirect('/customer/dashboard');
 });
 
-// 2. DASHBOARD ADMIN
 router.get('/admin/dashboard', protect, restrictTo('admin'), async (req, res) => {
     try {
-        // AMBIL SEMUA DATA (Agar sinkron dengan halaman list)
         const allParts = await Part.find({}); 
         const recentJobs = await Job.find().sort({ createdAt: -1 }).limit(5);
         const users = await User.find({}).sort({ role: 1 }); 
@@ -67,7 +57,7 @@ router.get('/admin/dashboard', protect, restrictTo('admin'), async (req, res) =>
         res.render('admin/dashboard', {
             title: 'Admin Dashboard',
             user: req.user,
-            parts: allParts, // Kirim semua data agar perhitungan .length di dashboard akurat
+            parts: allParts,
             transactions: recentJobs,
             users: users,
             activePage: 'dashboard'
@@ -77,9 +67,6 @@ router.get('/admin/dashboard', protect, restrictTo('admin'), async (req, res) =>
     }
 });
 
-
-
-// 3. DASHBOARD KASIR
 router.get('/kasir/dashboard', protect, restrictTo('kasir', 'admin'), async (req, res) => {
     try {
         const transactions = await Transaction.find().sort({ createdAt: -1 }).limit(10);
@@ -96,7 +83,6 @@ router.get('/kasir/dashboard', protect, restrictTo('kasir', 'admin'), async (req
     }
 });
 
-// 4. DASHBOARD MEKANIK
 router.get('/mechanic/dashboard', protect, restrictTo('mekanik', 'admin'), async (req, res) => {
     try {
         const historyJobs = await Job.find({ mechanicId: req.user._id }).sort({ createdAt: -1 });
@@ -111,7 +97,6 @@ router.get('/mechanic/dashboard', protect, restrictTo('mekanik', 'admin'), async
     }
 });
 
-// 5. DASHBOARD PELANGGAN
 router.get('/customer/dashboard', protect, async (req, res) => {
     try {
         const myJobs = await Job.find({ customerId: req.user._id }).sort({ createdAt: -1 });
@@ -126,15 +111,9 @@ router.get('/customer/dashboard', protect, async (req, res) => {
     }
 });
 
-
-// 6. MANAJEMEN DATA (Mencegah 404 pada tombol-tombol dashboard)
-
 // --- MANAJEMEN DATA PARTS ---
-
-// 1. Tampilkan Halaman Daftar
 router.get('/parts', protect, PartController.getAllParts);
 
-// 2. Tampilkan Halaman Form Tambah (GET)
 router.get('/parts/add', protect, restrictTo('admin'), (req, res) => {
     res.render('parts/add', { 
         title: 'Tambah Barang', 
@@ -144,13 +123,14 @@ router.get('/parts/add', protect, restrictTo('admin'), (req, res) => {
     });
 });
 
-// 3. Aksi Simpan Data (Pemicu 404 jika baris ini hilang)
 router.post('/api/parts/add', protect, restrictTo('admin'), PartController.createPartView);
 
-// 4. Aksi Hapus
+// FIX: Gunakan PartController (P Besar) sesuai import di line 8
+router.get('/parts/:id/edit', protect, restrictTo('admin'), PartController.getEditPage);
+
 router.delete('/api/parts/delete/:id', protect, restrictTo('admin'), PartController.deletePart);
 
-// Services (Jasa)
+// --- SERVICES ---
 router.get('/services', protect, async (req, res) => {
     try {
         const services = await Service.find({}).sort({ name: 1 });
@@ -158,21 +138,15 @@ router.get('/services', protect, async (req, res) => {
     } catch (error) { res.status(500).send("Error memuat data jasa"); }
 });
 
-router.get('/services/add', protect, restrictTo('admin'), (req, res) => {
-    res.render('services/add', { title: 'Tambah Jasa', user: req.user, activePage: 'services' });
-});
+// TAMBAHKAN: Rute View Edit Jasa
+router.get('/services/:id/edit', protect, restrictTo('admin'), ServiceController.getEditPage);
 
-// Rute Hapus Jasa (Gunakan ID yang konsisten)
-router.delete('/api/services/delete/:id', protect, restrictTo('admin'), async (req, res) => {
-    try {
-        await Service.findByIdAndDelete(req.params.id);
-        res.redirect('/services?delete=success'); // Kembali ke daftar jasa
-    } catch (error) {
-        res.status(500).send("Gagal menghapus jasa: " + error.message);
-    }
-});
+// TAMBAHKAN: Rute API Update Jasa
+router.put('/api/services/:id', protect, restrictTo('admin'), ServiceController.updateService);
 
-// Transactions
+router.delete('/api/services/delete/:id', protect, restrictTo('admin'), ServiceController.deleteService);
+
+// --- TRANSACTIONS ---
 router.get('/transactions', protect, restrictTo('admin', 'kasir'), async (req, res) => {
     try {
         const transactions = await Transaction.find().sort({ createdAt: -1 });
@@ -199,7 +173,7 @@ router.get('/transactions/detail/:id', protect, async (req, res) => {
     } catch (error) { res.status(500).send("Error memuat detail"); }
 });
 
-// Users
+// --- USERS ---
 router.get('/users', protect, restrictTo('admin'), async (req, res) => {
     try {
         const users = await User.find({}).sort({ role: 1 });
@@ -215,7 +189,6 @@ router.get('/users/edit/:id', protect, async (req, res) => {
     try {
         const targetUser = await User.findById(req.params.id);
         if (!targetUser) return res.status(404).send("User tidak ditemukan");
-        
         res.render('users/edit', {
             title: 'Pengaturan Akun',
             targetUser: targetUser,
@@ -227,14 +200,9 @@ router.get('/users/edit/:id', protect, async (req, res) => {
     }
 });
 
-// Rute Laporan Keuangan (PASTIKAN NAMA FUNGSI SAMA DENGAN DI module.exports)
-// 1. Rute untuk menampilkan halaman Laporan Laba Rugi
 router.get('/admin/report', protect, restrictTo('admin'), TransactionController.getProfitReport);
-
-// 2. Rute untuk proses Export Excel
 router.get('/admin/report/export', protect, restrictTo('admin'), TransactionController.exportProfitToExcel);
 
-// Rute Booking Service
 router.get('/customer/booking', protect, (req, res) => {
     res.render('customer/booking', { 
         title: 'Booking Service Online', 

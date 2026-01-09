@@ -12,7 +12,29 @@
                 </div>
 
                 <div class="card-body p-4 p-md-5 bg-white">
-                    <form action="/api/parts/add" method="POST" id="formAddPart">
+                    <form action="/api/parts/add" method="POST" id="formAddPart" enctype="multipart/form-data">
+                        
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Foto Suku Cadang</label>
+                            <div id="drop-zone" class="drop-zone rounded-4 border-2 border-dashed d-flex flex-column align-items-center justify-content-center p-4 bg-light transition-all">
+                                <div class="drop-zone-content text-center" id="drop-zone-prompt">
+                                    <i class="fas fa-cloud-arrow-up fa-3x text-success mb-3"></i>
+                                    <h6 class="fw-bold text-dark">Tarik & Lepaskan Foto di Sini</h6>
+                                    <p class="text-muted small mb-0">Atau klik untuk memilih file dari folder</p>
+                                </div>
+                                
+                                <div id="preview-container" class="d-none w-100 text-center">
+                                    <img id="image-preview" src="#" alt="Preview" class="img-fluid rounded-3 shadow-sm mb-2" style="max-height: 200px;">
+                                    <p id="file-name" class="small text-muted mb-2 text-truncate px-3"></p>
+                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" onclick="resetPreview(event)">
+                                        <i class="fas fa-times me-1"></i> Ganti Foto
+                                    </button>
+                                </div>
+
+                                <input type="file" name="partImage" id="partImage" class="d-none" accept="image/*">
+                            </div>
+                        </div>
+
                         <div class="row g-4 mb-4">
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Kode Part</label>
@@ -85,17 +107,75 @@
 </div>
 
 <script>
-    // 1. TANGKAP PESAN DARI URL (Redirect logic)
-    const urlParams = new URLSearchParams(window.location.search);
-    const errorMsg = urlParams.get('error');
-    const successMsg = urlParams.get('success');
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('partImage');
+    const previewContainer = document.getElementById('preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    const fileNameDisplay = document.getElementById('file-name');
+    const dropZonePrompt = document.getElementById('drop-zone-prompt');
 
+    // Click to select file
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Drag & Drop Listeners
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+        });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length) {
+            fileInput.files = files;
+            handlePreview(files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+            handlePreview(fileInput.files[0]);
+        }
+    });
+
+    function handlePreview(file) {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                fileNameDisplay.textContent = file.name;
+                previewContainer.classList.remove('d-none');
+                dropZonePrompt.classList.add('d-none');
+                dropZone.classList.remove('py-5');
+                dropZone.classList.add('py-3');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function resetPreview(event) {
+        event.stopPropagation();
+        fileInput.value = '';
+        previewContainer.classList.add('d-none');
+        dropZonePrompt.classList.remove('d-none');
+        dropZone.classList.add('py-5');
+        dropZone.classList.remove('py-3');
+    }
+
+    // Redirect logic & Alert
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const errorMsg = urlParams.get('error');
         const successMsg = urlParams.get('success');
 
-        // Pop-up jika terjadi Error
         if (errorMsg) {
             Swal.fire({
                 icon: 'error',
@@ -105,7 +185,6 @@
             });
         }
 
-        // Pop-up jika Sukses
         if (successMsg) {
             Swal.fire({
                 icon: 'success',
@@ -117,7 +196,7 @@
         }
     });
 
-    // 4. VALIDASI CLIENT-SIDE (Tambahan agar lebih aman)
+    // Validasi Harga Jual vs Beli
     document.getElementById('formAddPart').addEventListener('submit', function(e) {
         const beli = document.getElementsByName('purchasePrice')[0].value;
         const jual = document.getElementsByName('price')[0].value;
@@ -135,12 +214,24 @@
 </script>
 
 <style>
-    .bg-emerald-gradient {
-        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-    }
+    .bg-emerald-gradient { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
     .input-group-text { border-radius: 12px 0 0 12px !important; }
     .form-control { border-radius: 0 12px 12px 0 !important; transition: all 0.3s ease; }
-    .form-control:focus { box-shadow: none; background-color: #fff !important; border: 1px solid #2ecc71 !important; }
+    .form-control:focus { box-shadow: none; border: 1px solid #2ecc71 !important; }
+    
+    /* Drag & Drop Styles */
+    .drop-zone {
+        border-color: #dee2e6;
+        cursor: pointer;
+        min-height: 180px;
+    }
+    .drop-zone.drag-over {
+        border-color: #2ecc71;
+        background-color: rgba(46, 204, 113, 0.05) !important;
+        transform: scale(1.01);
+    }
+    .transition-all { transition: all 0.3s ease-in-out; }
+
     .btn-emerald { background-color: #2ecc71; border: none; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .btn-emerald:hover { background-color: #27ae60; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3) !important; }
     .animate-fade-in { animation: fadeIn 0.8s ease-in-out; }

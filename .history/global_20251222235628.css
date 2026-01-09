@@ -1,8 +1,0 @@
-<style>
-    .card-hover { transition: all 0.3s ease; }
-    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
-    .btn-hover { transition: all 0.2s ease; }
-    .btn-hover:hover { transform: scale(1.05); filter: brightness(110%); }
-    .pulse { animation: pulse-red 2s infinite; }
-    @keyframes pulse-red { 0% { box-shadow: 0 0 0 0px rgba(220, 53, 69, 0.4); } 100% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); } }
-</style>
