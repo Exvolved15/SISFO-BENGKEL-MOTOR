@@ -1,0 +1,135 @@
+<div class="container py-5 animate-fade-in">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-emerald-gradient text-white py-4 border-0">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="icon-box bg-white bg-opacity-20 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-box-open fa-lg"></i>
+                        </div>
+                        <h3 class="mb-0 fw-bold">Tambah Suku Cadang</h3>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <div class="text-center mb-4">
+                        <p class="text-muted">Masukkan rincian inventaris baru secara akurat untuk mempermudah manajemen stok dan transaksi.</p>
+                    </div>
+                    
+                    <form action="/api/parts/add" method="POST">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Kode Part</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-barcode text-muted"></i></span>
+                                    <input type="text" name="code" class="form-control border-0 bg-light py-2" placeholder="PART-001" required>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Nama Suku Cadang</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-tag text-muted"></i></span>
+                                    <input type="text" name="name" class="form-control border-0 bg-light py-2" placeholder="Contoh: Kampas Rem Depan NMAX" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Stok Awal</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-cubes text-muted"></i></span>
+                                    <input type="number" name="stock" class="form-control border-0 bg-light py-2" min="0" placeholder="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Supplier / Distributor</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-truck-moving text-muted"></i></span>
+                                    <input type="text" name="supplier" class="form-control border-0 bg-light py-2" placeholder="Nama PT atau Toko Grosir" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Harga Beli (Modal)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-danger bg-opacity-10 border-0 text-danger fw-bold">Rp</span>
+                                    <input type="number" name="buyPrice" class="form-control border-0 bg-light py-2" placeholder="0" required>
+                                </div>
+                                <div class="form-text small text-muted">Harga per unit dari supplier.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted text-uppercase">Harga Jual (Konsumen)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-success bg-opacity-10 border-0 text-success fw-bold">Rp</span>
+                                    <input type="number" name="price" class="form-control border-0 bg-light py-2" placeholder="0" required>
+                                </div>
+                                <div class="form-text small text-muted">Harga yang akan tampil di struk pelanggan.</div>
+                            </div>
+                        </div>
+
+                        <hr class="my-5 opacity-10">
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <button type="submit" class="btn btn-success btn-emerald w-100 py-3 fw-bold rounded-3 shadow-sm">
+                                    <i class="fas fa-save me-2"></i>SIMPAN KE INVENTARIS
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="/parts" class="btn btn-outline-secondary w-100 py-3 fw-bold rounded-3">
+                                    <i class="fas fa-times me-2"></i>BATAL
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS Styling untuk form modern */
+    .bg-emerald-gradient {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    }
+
+    .input-group-text {
+        border-radius: 12px 0 0 12px !important;
+    }
+    
+    .form-control {
+        border-radius: 0 12px 12px 0 !important;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: none;
+        background-color: #fff !important;
+        border: 1px solid #2ecc71 !important;
+    }
+
+    .btn-emerald {
+        background-color: #2ecc71;
+        border: none;
+        transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .btn-emerald:hover {
+        background-color: #27ae60;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3) !important;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

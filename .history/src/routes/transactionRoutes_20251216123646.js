@@ -1,0 +1,28 @@
+// src/routes/transactionRoutes.js
+
+const express = require('express');
+const router = express.Router();
+// Asumsikan Anda punya controller dan fungsi ini
+const { getAllTransactions, createTransaction, getTransaction, printReceipt, addDetail } = require('../controllers/TransactionController'); 
+const { protect, restrictTo } = require('../middleware/authMiddleware'); 
+
+// Rute yang bisa diakses Admin dan Kasir
+router.route('/')
+    // Hanya Admin yang melihat semua transaksi (Asumsi)
+    .get(protect, restrictTo('admin'), getAllTransactions) 
+    // Admin dan Kasir bisa membuat/memproses transaksi baru
+    .post(protect, restrictTo('admin', 'kasir'), createTransaction); 
+
+router.route('/:id')
+    // Admin dan Kasir bisa melihat detail transaksi
+    .get(protect, restrictTo('admin', 'kasir'), getTransaction);
+
+// Menambahkan Detail Transaksi dan Cetak Resi
+// Ini adalah fungsionalitas yang harus diakses Kasir dan Admin
+router.route('/:id/detail')
+    .post(protect, restrictTo('admin', 'kasir'), addDetail); // Admin & Kasir tambah detail
+
+router.route('/:id/receipt')
+    .get(protect, restrictTo('admin', 'kasir'), printReceipt); // Admin & Kasir cetak resi
+
+module.exports = router;

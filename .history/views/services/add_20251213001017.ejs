@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h1><%= title %></h1>
+        <p>Isi detail jasa servis baru.</p>
+        
+        <form action="/services/add" method="POST">
+            <div class="mb-3">
+                <label for="serviceName" class="form-label">Nama Jasa Servis</label>
+                <input type="text" class="form-control" id="serviceName" name="serviceName" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="serviceCode" class="form-label">Kode Jasa</label>
+                <input type="text" class="form-control" id="serviceCode" name="serviceCode" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Harga Jasa (Rp)</label>
+                <input type="number" class="form-control" id="price" name="price" required min="0">
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Deskripsi</label>
+                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary me-2">Simpan Jasa Servis</button>
+            <a href="/services" class="btn btn-secondary">Batal</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"> 
+    <link rel="stylesheet" href="/css/style.css"> 
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> 
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg p-4">
+                    <h2 class="text-center mb-4">Login Sisfo Bengkel</h2>
+                    
+                    <form id="loginForm"> 
+                        <% if (query.success) { %>
+                            <div class="alert alert-success text-center">Registrasi berhasil! Silakan login.</div>
+                        <% } %>
+                        
+                        <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        Belum punya akun? <a href="/register">Daftar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    
+    <script type="module">
+        // TEMPEL KODE LOGIN FIREBASE DARI LANGKAH 30.5 DI SINI
+        // Termasuk import auth, import signInWithEmailAndPassword, dan event listener form.
+        
+        // Contoh import:
+        // import auth from '/js/firebaseAuth.js'; 
+        // import { signInWithEmailAndPassword } from ".../firebase-auth.js"; 
+        
+        // ... (Logika form submit login) ...
+    </script>
+</body>
+</html>

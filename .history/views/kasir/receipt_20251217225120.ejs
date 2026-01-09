@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: 'monospace'; width: 80mm; font-size: 12px; line-height: 1.2; }
+        .center { text-align: center; }
+        .line { border-top: 1px dashed black; margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        .right { text-align: right; }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="center">
+        <strong>BENGKEL MOTOR ANDA</strong><br>
+        Alamat Bengkel No. 123<br>
+        --------------------------------
+    </div>
+    <table>
+        <tr><td>No. Plat</td><td>: <%= job.vehicleLicense %></td></tr>
+        <tr><td>Cust</td><td>: <%= job.customer.name %></td></tr>
+        <tr><td>Mekanik</td><td>: <%= job.assignedTo.name %></td></tr>
+    </table>
+    <div class="line"></div>
+    <table>
+        <% job.transactionDetails.forEach(item => { %>
+        <tr>
+            <td colspan="2"><%= item.name %></td>
+        </tr>
+        <tr>
+            <td><%= item.quantity %> x <%= item.price %></td>
+            <td class="right"><%= item.subtotal %></td>
+        </tr>
+        <% }) %>
+    </table>
+    <div class="line"></div>
+    <table>
+        <tr>
+            <td><strong>TOTAL</strong></td>
+            <td class="right"><strong>Rp <%= new Intl.NumberFormat('id-ID').format(job.totalAmount) %></strong></td>
+        </tr>
+    </table>
+    <div class="center" style="margin-top: 10px;">
+        Terima Kasih Atas Kepercayaan Anda
+    </div>
+</body>
+</html>

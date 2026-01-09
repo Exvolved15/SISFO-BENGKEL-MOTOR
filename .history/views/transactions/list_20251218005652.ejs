@@ -1,0 +1,50 @@
+<h1><%= title %></h1>
+<p>Daftar riwayat penjualan suku cadang dan jasa servis.</p>
+
+<a href="/transactions/add" class="btn btn-primary mb-3">Buat Transaksi Baru</a>
+
+<% if (transactions.length > 0) { %>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Invoice</th>
+                    <th>Pelanggan</th>
+                    <th>Plat Nomor</th>
+                    <th>Total Bayar</th>
+                    <th>Metode</th>
+                    <th>Tanggal</th>
+                    <th class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% transactions.forEach(trx => { %>
+                    <tr>
+                        <td><strong><%= trx.invoiceNumber %></strong></td>
+                        <td><%= trx.customerName %></td>
+                        <td><%= trx.vehicleLicense %></td>
+                        <td>Rp <%= (trx.totalAmount || trx.grandTotal || 0).toLocaleString('id-ID') %></td>
+                        <td>
+                            <span class="badge bg-secondary"><%= trx.paymentMethod %></span>
+                        </td>
+                        <td><%= new Date(trx.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) %></td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a href="/transactions/<%= trx._id %>" class="btn btn-sm btn-info text-white">
+                                    Detail
+                                </a>
+                                <a href="/transactions/print/<%= trx._id %>" target="_blank" class="btn btn-sm btn-dark">
+                                    Cetak Resi
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+<% } else { %>
+    <div class="alert alert-warning" role="alert">
+        Belum ada riwayat transaksi yang tersimpan.
+    </div>
+<% } %>

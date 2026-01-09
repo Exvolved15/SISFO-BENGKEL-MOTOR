@@ -1,0 +1,65 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="<%= (typeof user !== 'undefined' && user) ? '/dashboard-redirect' : '/' %>">
+            <div class="bg-success text-white rounded-3 p-1 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                <i class="fas fa-screwdriver-wrench"></i>
+            </div>
+            <span>ACR Motor</span>
+        </a>
+
+        <div class="d-flex align-items-center ms-lg-3">
+            <ul class="nav flex-row align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-white <%= (locals.activePage === 'home') ? 'fw-bold border-bottom border-success' : 'opacity-75' %>" href="/">Overview</a>
+                </li>
+                <li class="nav-item border-start border-secondary ms-2 ps-2">
+                    <a class="nav-link px-2 text-white <%= (locals.activePage === 'about') ? 'fw-bold border-bottom border-success' : 'opacity-75' %>" href="/about">About</a>
+                </li>
+            </ul>
+        </div>
+
+        <% if (typeof user !== 'undefined' && user) { %>
+            <button class="navbar-toggler border-0 shadow-none ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navInternal">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        <% } %>
+
+        <div class="collapse navbar-collapse" id="navInternal">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <% if (user.role === 'admin' || user.role === 'kasir') { %>
+                        <li class="nav-item"><a class="nav-link small px-lg-3" href="/parts">Suku Cadang</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle small px-lg-3" href="#" data-bs-toggle="dropdown">Transaksi</a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item small" href="/transactions/add">Baru</a></li>
+                                <li><a class="dropdown-item small" href="/transactions">Riwayat</a></li>
+                            </ul>
+                        </li>
+                    <% } %>
+
+                    <li class="nav-item dropdown ms-lg-3">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center bg-white bg-opacity-10 px-3 py-1 rounded-pill" href="#" data-bs-toggle="dropdown">
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 28px; height: 28px; font-size: 0.7rem;">
+                                <%= user.name.charAt(0).toUpperCase() %>
+                            </div>
+                            <span class="small fw-bold text-white"><%= user.name.split(' ')[0] %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                            <li><a class="dropdown-item small text-danger fw-bold" href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                <% } else { %>
+                    <li class="nav-item ms-lg-3 d-none d-lg-block">
+                        <a href="/login" class="btn btn-success btn-sm px-4 rounded-pill fw-bold">Masuk</a>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .navbar { background-color: #1a1a1a !important; border-bottom: 2px solid #2ecc71; z-index: 1050; }
+    .dropdown-menu-dark { border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+</style>

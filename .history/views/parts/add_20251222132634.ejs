@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h1><%= title %></h1>
+        <p>Isi formulir di bawah ini untuk menambahkan suku cadang baru ke inventori.</p>
+        
+        <form action="/api/parts/add" method="POST">
+            <div class="mb-3">
+                <label>Nama Suku Cadang</label>
+                <input type="text" name="name" class="form-control" required> </div>
+            <div class="mb-3">
+                <label>Kode Part</label>
+                <input type="text" name="code" class="form-control" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Harga Jual</label>
+                    <input type="number" name="price" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Stok Awal</label>
+                    <input type="number" name="stock" class="form-control" required>
+                </div>
+            </div>
+            <form action="/api/parts/add" method="POST">
+                <button type="submit" class="btn btn-primary">Simpan Suku Cadang</button>
+            </form>
+            
+        </form>
+    </div>
+</div>

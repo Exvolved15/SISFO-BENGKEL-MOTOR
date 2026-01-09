@@ -1,0 +1,58 @@
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm border-0 mt-4" style="border-radius: 15px;">
+            <div class="card-header bg-primary text-white py-3">
+                <h3 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Tambah Suku Cadang Baru</h3>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted">Isi formulir di bawah ini untuk menambahkan suku cadang ke sistem inventori.</p>
+                
+                <form action="/api/parts/add" method="POST">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Kode Part</label>
+                            <input type="text" name="code" class="form-control" placeholder="Contoh: PART-11" required>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label fw-bold">Nama Suku Cadang</label>
+                            <input type="text" name="name" class="form-control" placeholder="Masukkan nama barang" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Stok Awal</label>
+                            <input type="number" name="stock" class="form-control" min="0" required>
+                        </div>
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label fw-bold">Supplier</label>
+                            <input type="text" name="supplier" class="form-control" placeholder="Nama distributor/pabrik" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Harga Beli (Rp)</label>
+                            <input type="number" name="buyPrice" class="form-control" placeholder="Harga dari supplier" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Harga Jual (Rp)</label>
+                            <input type="number" name="price" class="form-control" placeholder="Harga ke konsumen" required>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/parts" class="btn btn-secondary px-4">
+                            <i class="fas fa-arrow-left me-1"></i> Batal
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                            <i class="fas fa-save me-1"></i> Simpan Suku Cadang
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

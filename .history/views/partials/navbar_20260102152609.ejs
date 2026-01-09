@@ -1,0 +1,50 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="<%= (typeof user !== 'undefined' && user) ? '/dashboard-redirect' : '/' %>">
+            <div class="bg-success text-white rounded-3 p-1 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                <i class="fas fa-screwdriver-wrench"></i>
+            </div>
+            <span>ACR Motor</span>
+        </a>
+
+        <div class="d-flex align-items-center ms-auto">
+            <ul class="navbar-nav flex-row align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-white <%= (locals.activePage === 'home') ? 'fw-bold border-bottom border-success' : 'opacity-75' %>" href="/">Overview</a>
+                </li>
+                <li class="nav-item ms-2 ps-2 border-start border-secondary">
+                    <a class="nav-link px-2 text-white <%= (locals.activePage === 'about') ? 'fw-bold border-bottom border-success' : 'opacity-75' %>" href="/about">About</a>
+                </li>
+
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <% if (user.role === 'admin' || user.role === 'kasir') { %>
+                        <li class="nav-item d-none d-md-block"><a class="nav-link small px-2" href="/parts">Suku Cadang</a></li>
+                    <% } %>
+
+                    <li class="nav-item dropdown ms-2">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center bg-white bg-opacity-10 px-3 py-1 rounded-pill" href="#" data-bs-toggle="dropdown">
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 24px; height: 24px; font-size: 0.6rem;">
+                                <%= user.name.charAt(0).toUpperCase() %>
+                            </div>
+                            <span class="small fw-bold text-white d-none d-sm-inline"><%= user.name.split(' ')[0] %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow">
+                            <li><a class="dropdown-item small" href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                <% } else { %>
+                    <li class="nav-item ms-3">
+                        <a href="/login" class="btn btn-success btn-sm px-4 rounded-pill fw-bold shadow-sm">
+                            <i class="fas fa-sign-in-alt me-1"></i>Masuk
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .navbar { background-color: #1a1a1a !important; border-bottom: 2px solid #2ecc71; z-index: 1050; }
+    .dropdown-menu-dark { border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+</style>

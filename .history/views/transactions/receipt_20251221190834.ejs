@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Struk - <%= transaction.invoiceNumber %></title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; width: 80mm; margin: 0 auto; font-size: 12px; color: #000; }
+        .text-center { text-align: center; }
+        .line { border-bottom: 1px dashed #000; margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        .item-name { padding-top: 8px; font-weight: bold; display: block; }
+        .item-details { padding-bottom: 4px; }
+        .total-row { font-weight: bold; font-size: 14px; }
+        @media print {
+            @page { margin: 0; }
+            body { margin: 5mm; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="text-center">
+        <h3 style="margin-bottom: 5px;">SISFO BENGKEL</h3>
+        <p style="margin: 0;">Invoice: <%= transaction.invoiceNumber %></p>
+        <p style="margin: 0;"><%= new Date(transaction.createdAt).toLocaleString('id-ID') %></p>
+    </div>
+
+    <div class="line"></div>
+    <p style="margin: 5px 0;">Pelanggan: <%= transaction.customerName %><br>
+       Plat No  : <%= transaction.vehicleLicense %></p>
+    <div class="line"></div>
+
+    <table>
+        <% 
+            // Inisialisasi hitung ulang subtotal dari detail item
+            let hitungSubtotal = 0; 
+        %>
+        <% details.forEach(item => { 
+            let totalItem = item.quantity * item.pricePerUnit;
+            hitungSubtotal += totalItem;
+        %>
+            <tr>
+                <td colspan="2" class="item-name"><%= item.itemName %></td>
+            </tr>
+            <tr>
+                <td class="item-details"><%= item.quantity %> x <%= item.pricePerUnit.toLocaleString('id-ID') %></td>
+                <td align="right" class="item-details"><%= totalItem.toLocaleString('id-ID') %></td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <div class="line"></div>
+
+    <% 
+        // LOGIKA SINKRONISASI DISKON & TOTAL
+        // 1. Ambil Grand Total (Apa yang dibayar pelanggan)
+        let bayarAkhir = transaction.grandTotal || 0;
+
+        // 2. Tentukan Subtotal (Total kotor sebelum diskon)
+        // Jika totalAmount di DB nol, gunakan hasil hitung ulang dari item details
+        let subtotalReal = (transaction.totalAmount > 0) ? transaction.totalAmount : hitungSubtotal;
+
+        // 3. Hitung Nominal Diskon (Selisih antara harusnya bayar vs kenyataan bayar)
+        let nominalDiskon = (subtotalReal > bayarAkhir) ? (subtotalReal - bayarAkhir) : (transaction.discount || 0);
+
+        // 4. Hitung Persentase Diskon
+        let persenDiskon = subtotalReal > 0 ? Math.round((nominalDiskon / subtotalReal) * 100) : 0;
+    %>
+
+    <table>
+        <div class="line"></div>
+
+    <% 
+        // LOGIKA PENYELAMAT:
+        // Gunakan grandTotal dari DB (pasti ada karena ini yang dibayar)
+        let totalBersih = transaction.grandTotal || 0;
+        
+        // Gunakan subtotal kotor (prioritaskan hitungan ulang dari item di atas)
+        let totalKotor = subtotalDariItem > 0 ? subtotalDariItem : (transaction.totalAmount || totalBersih);
+        
+        // Hitung selisih
+        let nominalDiskon = totalKotor - totalBersih;
+        if (nominalDiskon < 0) nominalDiskon = 0; // Jaga-jaga jika salah input
+
+        // Hitung persen
+        let persen = totalKotor > 0 ? Math.round((nominalDiskon / totalKotor) * 100) : 0;
+    %>
+
+    <table>
+        <tr>
+            <td>Total:</td>
+            <td align="right">Rp <%= totalKotor.toLocaleString('id-ID') %></td>
+        </tr>
+        <tr>
+            <td>Diskon (<%= persen %>%):</td>
+            <td align="right">- Rp <%= nominalDiskon.toLocaleString('id-ID') %></td>
+        </tr>
+        <tr style="font-weight: bold; font-size: 14px;">
+            <td style="padding-top: 10px;">TOTAL AKHIR:</td>
+            <td align="right" style="padding-top: 10px;">Rp <%= totalBersih.toLocaleString('id-ID') %></td>
+        </tr>
+    </table>
+
+    <div class="line"></div>
+    <div class="text-center" style="margin-top: 10px;">
+        <p>Terima Kasih Atas Kunjungan Anda</p>
+        <p style="font-size: 10px;">Barang yang sudah dibeli<br>tidak dapat ditukar/dikembalikan</p>
+    </div>
+</body>
+</html>

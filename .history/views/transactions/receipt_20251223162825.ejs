@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota_<%= transaction.invoiceNumber %></title>
+    <style>
+        /* RESET & BASE STYLES */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            width: 80mm; 
+            margin: 0 auto; 
+            padding: 15px 10px;
+            font-size: 12px; 
+            color: #000; 
+            background-color: #fff;
+        }
+
+        /* TIPOGRAFI */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .fw-bold { font-weight: bold; }
+        .uppercase { text-transform: uppercase; }
+
+        /* HEADER */
+        .brand-name { font-size: 20px; font-weight: bold; margin-bottom: 2px; }
+        .brand-sub { font-size: 10px; line-height: 1.3; margin-bottom: 5px; }
+
+        /* GARIS PEMISAH */
+        .divider { border-bottom: 1px dashed #000; margin: 8px 0; width: 100%; }
+        .divider-double { border-bottom: 2px double #000; margin: 8px 0; }
+
+        /* INFO TRANSAKSI */
+        .info-table { width: 100%; font-size: 11px; margin-bottom: 5px; }
+        .info-table td { padding: 1px 0; }
+
+        /* TABEL ITEM */
+        .item-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        .item-row-name { font-weight: bold; padding-top: 5px; font-size: 11px; }
+        .item-row-detail { font-size: 11px; padding-bottom: 5px; }
+
+        /* TOTALS */
+        .total-table { width: 100%; margin-top: 5px; }
+        .total-table td { padding: 2px 0; }
+        .grand-total { font-size: 16px; border-top: 1px solid #000; padding-top: 5px; }
+
+        /* FOOTER */
+        .footer-note { font-size: 10px; margin-top: 15px; line-height: 1.4; }
+        
+        /* TOMBOL KONTROL (HANYA LAYAR) */
+        @media print { .no-print { display: none !important; } }
+        .btn-group { margin-top: 30px; display: flex; gap: 10px; justify-content: center; }
+        .btn { padding: 8px 15px; border: 1px solid #000; background: #fff; cursor: pointer; font-family: sans-serif; font-size: 12px; }
+        .btn-print { background: #000; color: #fff; }
+    </style>
+</head>
+<body onload="window.print()">
+
+    <div class="text-center">
+        <h1 class="brand-name">SISFO BENGKEL</h1>
+        <div class="brand-sub">
+            Jl. Abdullah Daeng Sirua No.170a, Panakkukang<br>
+            Makassar, Sulawesi Selatan<br>
+            Telp: 0812-3456-7890
+        </div>
+        <div class="divider-double"></div>
+    </div>
+
+    <table class="info-table">
+        <tr>
+            <td width="35%">No. Invoice</td>
+            <td width="5%">:</td>
+            <td class="fw-bold"><%= transaction.invoiceNumber %></td>
+        </tr>
+        <tr>
+            <td>Tanggal</td>
+            <td>:</td>
+            <td><%= new Date(transaction.createdAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
+        </tr>
+        <tr>
+            <td>Pelanggan</td>
+            <td>:</td>
+            <td class="uppercase"><%= transaction.customerName %></td>
+        </tr>
+        <tr>
+            <td>Unit/Nopol</td>
+            <td>:</td>
+            <td><%= transaction.motorName %> / <%= transaction.vehicleLicense %></td>
+        </tr>
+        <tr>
+            <td>Mekanik</td>
+            <td>:</td>
+            <td><%= transaction.mechanicName || '-' %></td>
+        </tr>
+    </table>
+
+    <div class="divider"></div>
+
+    <table class="item-table">
+        <% if (details && details.length > 0) { %>
+            <% details.forEach(item => { %>
+                <tr>
+                    <td colspan="2" class="item-row-name uppercase">
+                        [<%= item.itemType === 'part' ? 'P' : 'J' %>] <%= item.itemName %>
+                    </td>
+                </tr>
+                <tr class="item-row-detail">
+                    <td>&nbsp;&nbsp;<%= item.quantity %> x <%= item.pricePerUnit.toLocaleString('id-ID') %></td>
+                    <td class="text-right fw-bold"><%= (item.quantity * item.pricePerUnit).toLocaleString('id-ID') %></td>
+                </tr>
+            <% }); %>
+        <% } %>
+    </table>
+
+    <div class="divider"></div>
+
+    <% 
+        let subtotal = transaction.totalAmount || 0;
+        let diskon = transaction.discount || 0;
+        let totalAkhir = transaction.grandTotal || 0;
+        let persenDiskon = subtotal > 0 ? Math.round((diskon / subtotal) * 100) : 0;
+    %>
+    <table class="total-table">
+        <tr>
+            <td>Subtotal</td>
+            <td class="text-right">Rp <%= subtotal.toLocaleString('id-ID') %></td>
+        </tr>
+        <% if (diskon > 0) { %>
+        <tr>
+            <td>Potongan (<%= persenDiskon %>%)</td>
+            <td class="text-right">-Rp <%= diskon.toLocaleString('id-ID') %></td>
+        </tr>
+        <% } %>
+        <tr class="grand-total fw-bold">
+            <td>TOTAL AKHIR</td>
+            <td class="text-right text-large">Rp <%= totalAkhir.toLocaleString('id-ID') %></td>
+        </tr>
+        <tr>
+            <td>Metode Bayar</td>
+            <td class="text-right uppercase"><%= transaction.paymentMethod %></td>
+        </tr>
+    </table>
+
+    <div class="divider"></div>
+
+    <div class="text-center footer-note">
+        <p class="fw-bold">TERIMA KASIH</p>
+        <p>Atas kepercayaan Anda servis di bengkel kami.</p>
+        <p style="margin-top: 5px; font-style: italic;">Barang yang sudah dibeli tidak dapat ditukar atau dikembalikan.</p>
+        <div style="margin-top: 10px; font-weight: bold; border: 1px solid #000; padding: 2px;">
+            Sistem Digital By Sisfo Bengkel
+        </div>
+    </div>
+
+    <div class="btn-group no-print">
+        <button onclick="window.print()" class="btn btn-print">Cetak Nota</button>
+        <button onclick="window.close()" class="btn">Tutup</button>
+    </div>
+
+</body>
+</html>

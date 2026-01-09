@@ -1,0 +1,77 @@
+<section class="py-5 bg-dark text-white shadow-sm mb-5 animate-fade-in" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1486006396193-471a2a5d3f47?auto=format&fit=crop&q=80'); background-size: cover; background-position: center;">
+    <div class="container py-5 text-center">
+        <h1 class="display-4 fw-bold mb-3" data-aos="zoom-in">Solusi Digital <span class="brand-border">Sisfo Bengkel</span></h1>
+        <p class="lead opacity-75 mx-lg-5" data-aos="fade-up">Manajemen bengkel modern dengan transparansi data dan monitoring mekanik real-time.</p>
+        
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <div class="card bg-white p-2 rounded-pill shadow-lg border-0" data-aos="flip-up">
+                    <form action="/track-status" method="GET" class="d-flex p-1">
+                        <input type="text" name="invoice" class="form-control border-0 rounded-pill px-4" placeholder="Masukkan No. Invoice (INV-...) atau No. Plat" required>
+                        <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold" style="background-color: #2ecc71;">CEK STATUS</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mt-5">
+            <a href="/login" class="btn btn-success btn-lg px-5 fw-bold btn-hover shadow" style="background-color: #2ecc71; border-color: #2ecc71;">Masuk ke Sistem</a>
+            <a href="/about" class="btn btn-outline-light btn-lg px-5 shadow">Cek Lokasi Kami</a>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row g-4 mb-5 text-center" data-aos="fade-up">
+        <div class="col-md-4">
+            <h2 class="fw-bold text-success mb-0">1,200+</h2>
+            <p class="text-muted">Servis Sukses</p>
+        </div>
+        <div class="col-md-4">
+            <h2 class="fw-bold text-success mb-0">15+</h2>
+            <p class="text-muted">Mekanik Ahli</p>
+        </div>
+        <div class="col-md-4">
+            <h2 class="fw-bold text-success mb-0">4.9/5</h2>
+            <p class="text-muted">Rating Pelanggan</p>
+        </div>
+    </div>
+
+    <section class="mb-5 py-4">
+        <div class="text-center mb-5" data-aos="fade-down">
+            <h2 class="fw-bold">Layanan Unggulan Kami</h2>
+            <p class="text-muted">Kami menyediakan berbagai jasa perawatan motor dengan standar pabrikan.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-right">
+                <div class="card border-0 shadow-sm h-100 p-4 card-hover text-center">
+                    <div class="mb-3 text-warning"><i class="fas fa-wrench fa-3x"></i></div>
+                    <h5 class="fw-bold">Servis Berkala</h5>
+                    <p class="text-muted small">Perawatan rutin mesin dengan standar operasional yang ketat.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="card border-0 shadow-sm h-100 p-4 card-hover text-center">
+                    <div class="mb-3 text-danger"><i class="fas fa-oil-can fa-3x"></i></div>
+                    <h5 class="fw-bold">Ganti Oli & Part</h5>
+                    <p class="text-muted small">Penyediaan suku cadang original untuk semua tipe motor.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-left">
+                <div class="card border-0 shadow-sm h-100 p-4 card-hover text-center">
+                    <div class="mb-3 text-info"><i class="fas fa-microchip fa-3x"></i></div>
+                    <h5 class="fw-bold">Diagnosis Sistem</h5>
+                    <p class="text-muted small">Pengecekan kelistrikan menggunakan alat scanner modern terbaru.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </div>
+
+<style>
+    /* ... Style yang sudah ada tetap dipertahankan ... */
+    .brand-border { color: #2ecc71; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); font-weight: 800; }
+    .card-hover { transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+    .card-hover:hover { transform: translateY(-12px); border-color: #2ecc71 !important; box-shadow: 0 20px 40px rgba(46, 204, 113, 0.15) !important; }
+</style>

@@ -1,0 +1,36 @@
+<style>
+    /* Efek Hovering pada Card */
+    .card-hover {
+        transition: all 0.3s ease-in-out !important;
+    }
+    .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Efek Hovering pada Tombol */
+    .btn-hover {
+        transition: all 0.2s ease-in-out !important;
+    }
+    .btn-hover:hover {
+        transform: scale(1.05);
+        filter: brightness(110%);
+    }
+
+    /* Efek Hovering pada Baris Tabel */
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.02);
+        transition: 0.2s;
+    }
+
+    /* Efek Pulse untuk Status Sibuk */
+    .pulse-danger {
+        animation: pulse-red 2s infinite;
+        border-radius: 5px;
+    }
+    @keyframes pulse-red {
+        0% { box-shadow: 0 0 0 0px rgba(220, 53, 69, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+        100% { box-shadow: 0 0 0 0px rgba(220, 53, 69, 0); }
+    }
+</style>

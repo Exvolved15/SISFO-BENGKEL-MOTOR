@@ -1,0 +1,57 @@
+<div class="container mt-4">
+    <h2>Selamat Datang, <%= user.name %></h2>
+    <p>Anda login sebagai: <span class="badge bg-info"><%= user.role %></span></p>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Transaksi Baru</h5>
+                    <p class="card-text">Input pendaftaran kendaraan pelanggan.</p>
+                    <a href="/transactions/add" class="btn btn-light">Buka Form</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Riwayat Transaksi Terakhir</h5>
+            <a href="/transactions" class="btn btn-sm btn-outline-light">Lihat Semua</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Pelanggan</th>
+                            <th>Total</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (transactions && transactions.length > 0) { %>
+                            <% transactions.forEach(trx => { %>
+                            <tr>
+                                <td><strong><%= trx.invoiceNumber %></strong></td>
+                                <td><%= trx.customerName %></td>
+                                <td>Rp <%= trx.totalAmount.toLocaleString('id-ID') %></td>
+                                <td>
+                                    <a href="/transactions/print/<%= trx._id %>" target="_blank" class="btn btn-sm btn-dark">
+                                        <i class="bi bi-printer"></i> Cetak/PDF
+                                    </a>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="4" class="text-center">Belum ada transaksi hari ini.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

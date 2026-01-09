@@ -1,0 +1,210 @@
+<div class="container-fluid px-4 py-4 animate-fade-in">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-1"><%= title %></h1>
+            <p class="text-muted mb-0">Kelola ketersediaan suku cadang dan pantau harga inventory bengkel.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/parts/add" class="btn btn-success px-4 py-2 fw-bold rounded-3 shadow-sm btn-emerald">
+                <i class="fas fa-plus-circle me-2"></i>Tambah Suku Cadang
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-primary">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-3 p-3 me-3">
+                        <i class="fas fa-boxes fa-xl"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted small mb-1">Total Jenis Barang</h6>
+                        <h4 class="fw-bold mb-0"><%= parts.length %></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <% const lowStockCount = parts.filter(p => p.stock <= 5).length; %>
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-danger">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-danger bg-opacity-10 text-danger rounded-3 p-3 me-3">
+                        <i class="fas fa-exclamation-triangle fa-xl"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted small mb-1">Stok Menipis (≤ 5)</h6>
+                        <h4 class="fw-bold mb-0 text-danger"><%= lowStockCount %> <span class="small fw-normal text-muted">Item</span></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white border-start border-4 border-success">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-success bg-opacity-10 text-success rounded-3 p-3 me-3">
+                        <i class="fas fa-file-invoice-dollar fa-xl"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted small mb-1">Nilai Inventaris (Jual)</h6>
+                        <% 
+                            const totalValue = parts.reduce((acc, p) => acc + ((p.sellingPrice || p.price || 0) * p.stock), 0);
+                        %>
+                        <h4 class="fw-bold mb-0">Rp <%= totalValue.toLocaleString('id-ID') %></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white py-3 border-bottom border-light">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-warehouse me-2 text-success"></i>Daftar Inventaris Gudang</h6>
+                </div>
+                <div class="col-auto">
+                    <div class="input-group input-group-sm shadow-sm rounded-pill overflow-hidden border">
+                        <span class="input-group-text bg-white border-0"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" id="partSearch" class="form-control border-0 ps-0" placeholder="Cari kode atau nama barang...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="partTable">
+            <thead class="table-light">
+                <tr class="small text-uppercase fw-bold text-muted">
+                    <th class="ps-4">Preview</th>
+                    <th>Nama Suku Cadang</th>
+                    <th class="text-center">Stok</th>
+                    <th>Harga Jual</th>
+                    <th class="text-center pe-4">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% parts.forEach(part => { %>
+                    <tr>
+                        <td class="ps-4">
+                            <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="collapse" data-bs-target="#img-<%= part._id %>">
+                                <i class="fas fa-image text-primary"></i>
+                            </button>
+                            <div class="collapse mt-2" id="img-<%= part._id %>">
+                                <img src="https://loremflickr.com/100/100/engine,part?lock=<%= part.code %>" class="rounded border shadow-sm" style="width: 80px; height: 80px; object-fit: cover;">
+                            </div>
+                        </td>
+                        <td><div class="fw-bold text-dark"><%= part.name %></div><small class="text-muted"><%= part.code %></small></td>
+                        <td class="text-center"><span class="badge bg-success rounded-pill px-3"><%= part.stock %></span></td>
+                        <td class="fw-bold text-success">Rp <%= part.sellingPrice.toLocaleString('id-ID') %></td>
+                        <td class="text-center pe-4">
+                            <div class="btn-group shadow-sm rounded-3">
+                                <a href="/api/parts/<%= part._id %>/edit" class="btn btn-sm btn-white border border-light"><i class="fas fa-edit text-warning"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+        <div class="card-body p-0">
+            <% if (parts.length > 0) { %>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="partTable">
+                        <thead class="table-light">
+                            <tr class="small text-uppercase fw-bold text-muted">
+                                <th class="ps-4">Kode</th>
+                                <th>Nama Suku Cadang</th>
+                                <th class="text-center">Stok</th>
+                                <th>Harga Beli</th>
+                                <th>Harga Jual</th>
+                                <th>Supplier</th>
+                                <th class="text-center pe-4">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% parts.forEach(part => { %>
+                                <tr>
+                                    <td class="ps-4"><span class="badge bg-light text-dark border font-monospace px-2 py-1"><%= part.code %></span></td>
+                                    <td>
+                                        <div class="fw-bold text-dark"><%= part.name %></div>
+                                    </td>
+                                    <td class="text-center">
+                                        <% 
+                                            let stockBadge = 'bg-success';
+                                            if(part.stock <= 5) stockBadge = 'bg-danger pulse-danger';
+                                            else if(part.stock <= 15) stockBadge = 'bg-warning text-dark';
+                                        %>
+                                        <span class="badge <%= stockBadge %> rounded-pill px-3 shadow-sm">
+                                            <%= part.stock %>
+                                        </span>
+                                    </td>
+                                    <td class="text-muted small">Rp <%= (part.purchasePrice || 0).toLocaleString('id-ID') %></td>
+                                    <td class="fw-bold text-success">Rp <%= (part.sellingPrice || part.price || 0).toLocaleString('id-ID') %></td>
+                                    <td><small class="text-muted"><%= part.supplier || '-' %></small></td>
+                                    <td class="text-center pe-4">
+                                        <div class="btn-group shadow-sm rounded-3">
+                                            <a href="/api/parts/<%= part._id %>/edit" class="btn btn-sm btn-white border border-light">
+                                                <i class="fas fa-edit text-warning"></i>
+                                            </a>
+                                            <form action="/api/parts/delete/<%= part._id %>?_method=DELETE" method="POST" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-white border border-light" 
+                                                    onclick="return confirm('Hapus data suku cadang ini?');">
+                                                    <i class="fas fa-trash-alt text-danger"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="text-center py-5">
+                    <i class="fas fa-box-open fa-4x text-muted opacity-25 mb-3"></i>
+                    <h5 class="text-muted">Gudang Masih Kosong</h5>
+                    <p class="small text-muted">Mulai masukkan data suku cadang untuk operasional bengkel.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS Khusus Inventory */
+    .font-monospace { font-family: 'Courier New', Courier, monospace; letter-spacing: 1px; }
+    .btn-white { background: #fff; }
+    .btn-white:hover { background: #f8f9fa; }
+    
+    .btn-emerald { background-color: #2ecc71; border: none; transition: 0.3s; color: white; }
+    .btn-emerald:hover { background-color: #27ae60; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); color: white; }
+
+    /* Animasi stok kritis */
+    .pulse-danger {
+        animation: pulse-red 2s infinite;
+    }
+    @keyframes pulse-red {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+    }
+
+    .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<script>
+    // Pencarian Real-time
+    document.getElementById('partSearch').addEventListener('keyup', function() {
+        let value = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#partTable tbody tr");
+        
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(value) ? "" : "none";
+        });
+    });
+</script>

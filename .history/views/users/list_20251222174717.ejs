@@ -1,0 +1,49 @@
+<h1><%= title %></h1>
+<p>Daftar akun admin dan kasir yang terdaftar di sistem.</p>
+
+<a href="/register" class="btn btn-success mb-3">Tambah User Baru</a>
+
+<% if (users.length > 0) { %>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Tanggal Daftar</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% users.forEach(u => { %>
+                    <tr>
+                        <td><%= u.name %></td>
+                        <td><%= u.email %></td>
+                        <td>
+                            <span class="badge bg-<%= u.role === 'admin' ? 'danger' : 'success' %>">
+                                <%= u.role.toUpperCase() %>
+                            </span>
+                        </td>
+                        <td><%= new Date(u.createdAt).toLocaleDateString('id-ID') %></td>
+                        <td>
+                            <a href="/users/edit/<%= u._id %>" class="btn btn-sm btn-warning me-2">Edit</a>
+                            
+                            <form action="/users/delete/<%= u._id %>?_method=DELETE" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" 
+                                    onclick="return confirm('Yakin hapus user <%= u.name %>?');" 
+                                    <%= (u._id.toString() === user._id.toString()) ? 'disabled' : '' %>>
+                                    Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+<% } else { %>
+    <div class="alert alert-info" role="alert">
+        Belum ada user yang terdaftar.
+    </div>
+<% } %>

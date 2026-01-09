@@ -1,0 +1,122 @@
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 mb-0 text-primary fw-bold"><i class="fas fa-file-invoice me-2"></i>Detail Transaksi</h2>
+        <a href="/transactions" class="btn btn-outline-secondary btn-sm shadow-sm">
+            <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Transaksi
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-dark text-white py-3">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Kendaraan & Pelanggan</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Nomor Invoice</div>
+                        <div class="col-sm-8 fw-bold text-primary"><%= header.invoiceNumber %></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Tanggal</div>
+                        <div class="col-sm-8"><%= new Date(header.createdAt).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }) %></div>
+                    </div>
+                    <hr class="opacity-10">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Pelanggan</div>
+                        <div class="col-sm-8 fw-bold text-uppercase"><%= header.customerName %></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Tipe Motor</div>
+                        <div class="col-sm-8"><span class="badge bg-secondary"><%= header.motorName || '-' %></span></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Nomor Polisi</div>
+                        <div class="col-sm-8 fw-bold"><%= header.vehicleLicense %></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Mekanik</div>
+                        <div class="col-sm-8">
+                            <span class="badge <%= header.mechanicName === 'Tanpa Mekanik' ? 'bg-light text-dark border' : 'bg-info text-dark' %>">
+                                <i class="fas fa-user-cog me-1"></i> <%= header.mechanicName %>
+                            </span>
+                        </div>
+                    </div>
+                    <hr class="opacity-10">
+                    <div class="row">
+                        <div class="col-sm-4 text-muted">Metode Bayar</div>
+                        <div class="col-sm-8"><span class="badge bg-primary px-3"><%= header.paymentMethod %></span></div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-sm-4 text-muted">Catatan</div>
+                        <div class="col-sm-8 text-muted italic small"><%= header.notes || '-' %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light py-3 border-bottom-0">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-calculator me-2"></i>Ringkasan Pembayaran</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Total Kotor</span>
+                        <span class="fw-bold">Rp <%= (header.totalAmount || 0).toLocaleString('id-ID') %></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 text-danger">
+                        <span>Diskon</span>
+                        <span>- Rp <%= (header.discount || 0).toLocaleString('id-ID') %></span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h6 mb-0 fw-bold">Total Bayar (Net)</span>
+                        <span class="h4 mb-0 text-success fw-bold">Rp <%= (header.grandTotal || 0).toLocaleString('id-ID') %></span>
+                    </div>
+                    <div class="mt-4 d-grid">
+                        <a href="/api/transactions/print/<%= header._id %>" target="_blank" class="btn btn-dark py-2">
+                            <i class="fas fa-print me-2"></i> Cetak Struk / Resi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4 overflow-hidden">
+        <div class="card-header bg-info text-white py-3">
+            <h6 class="mb-0 fw-bold"><i class="fas fa-shopping-cart me-2"></i>Item Penjualan (Suku Cadang & Jasa)</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th style="width: 80px;">Jenis</th>
+                        <th>Kode Item</th>
+                        <th>Nama Item</th>
+                        <th class="text-end">Harga Satuan (Rp)</th>
+                        <th style="width: 80px;">Qty</th>
+                        <th class="text-end">Subtotal (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% details.forEach(item => { %>
+                        <tr>
+                            <td class="text-center">
+                                <span class="badge <%= item.itemType === 'part' ? 'bg-danger' : 'bg-warning text-dark' %> small uppercase">
+                                    <%= item.itemType === 'part' ? 'PART' : 'JASA' %>
+                                </span>
+                            </td>
+                            <td class="text-center font-monospace"><%= item.itemCode %></td>
+                            <td><%= item.itemName %></td>
+                            <td class="text-end"><%= (item.pricePerUnit || 0).toLocaleString('id-ID') %></td>
+                            <td class="text-center fw-bold"><%= item.quantity %></td>
+                            <td class="text-end fw-bold text-primary">Rp <%= (item.subTotal || 0).toLocaleString('id-ID') %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

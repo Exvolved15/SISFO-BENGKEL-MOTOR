@@ -1,0 +1,179 @@
+<div class="container-fluid px-4 py-4 animate-fade-in">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="h3 mb-1 fw-bold text-dark">
+                <i class="fas fa-file-invoice text-success me-2"></i>Detail Faktur
+            </h2>
+            <p class="text-muted mb-0">Informasi lengkap transaksi pengerjaan unit dan penjualan suku cadang.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/transactions" class="btn btn-white border px-3 fw-bold rounded-3 shadow-sm">
+                <i class="fas fa-arrow-left me-2"></i>Kembali
+            </a>
+            <a href="/api/transactions/print/<%= header._id %>" target="_blank" class="btn btn-emerald px-4 fw-bold rounded-3 shadow-sm">
+                <i class="fas fa-print me-2"></i>Cetak Resi
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                <div class="card-header bg-dark text-white py-3 border-0">
+                    <h6 class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-user-check me-2 text-warning"></i> 
+                        Informasi Pelanggan & Kendaraan
+                    </h6>
+                </div>
+                <div class="card-body p-4 bg-white">
+                    <div class="row mb-4 align-items-center">
+                        <div class="col-sm-4 text-muted small text-uppercase fw-bold">No. Invoice</div>
+                        <div class="col-sm-8 h5 mb-0 fw-bold text-primary font-monospace"><%= header.invoiceNumber %></div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted small text-uppercase fw-bold">Waktu Transaksi</div>
+                        <div class="col-sm-8 text-dark fw-bold">
+                            <i class="far fa-calendar-alt me-2"></i>
+                            <%= new Date(header.createdAt).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }) %>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-4 border-start border-4 border-success mb-4 shadow-inner">
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted small fw-bold">PELANGGAN</div>
+                            <div class="col-sm-8 fw-bold text-dark text-uppercase"><%= header.customerName %></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-muted small fw-bold">UNIT MOTOR</div>
+                            <div class="col-sm-8"><span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 rounded-pill"><%= header.motorName || 'Umum' %></span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 text-muted small fw-bold">NO. POLISI</div>
+                            <div class="col-sm-8 fw-bold font-monospace text-dark"><%= header.vehicleLicense %></div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-sm-4 text-muted small text-uppercase fw-bold">Mekanik Bertugas</div>
+                        <div class="col-sm-8">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-xs bg-info-soft text-info rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                    <i class="fas fa-wrench"></i>
+                                </div>
+                                <span class="fw-bold text-dark"><%= header.mechanicName || 'Tanpa Mekanik' %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                <div class="card-header bg-emerald-gradient text-white py-3 border-0">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-wallet me-2"></i>Ringkasan Finansial</h6>
+                </div>
+                <div class="card-body p-4 bg-white d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted fw-bold small text-uppercase">Subtotal (Bruto)</span>
+                            <span class="fw-bold text-dark">Rp <%= (header.totalAmount || 0).toLocaleString('id-ID') %></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-danger fw-bold small text-uppercase">Diskon / Potongan</span>
+                            <span class="text-danger fw-bold">- Rp <%= (header.discount || 0).toLocaleString('id-ID') %></span>
+                        </div>
+                        <hr class="opacity-10">
+                        <div class="text-center py-3">
+                            <div class="text-muted small fw-bold text-uppercase mb-1">TOTAL YANG DIBAYAR</div>
+                            <div class="h2 mb-0 text-success fw-bold font-monospace">Rp <%= (header.grandTotal || 0).toLocaleString('id-ID') %></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto">
+                        <div class="p-3 bg-light rounded-4 d-flex justify-content-between align-items-center">
+                            <span class="small fw-bold text-muted text-uppercase">Metode Pembayaran:</span>
+                            <span class="badge bg-dark rounded-pill px-4"><%= header.paymentMethod.toUpperCase() %></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mt-4 rounded-4 overflow-hidden">
+        <div class="card-header bg-info-gradient text-white py-3 border-0">
+            <h6 class="mb-0 fw-bold"><i class="fas fa-shopping-basket me-2"></i>Rincian Suku Cadang & Jasa</h6>
+        </div>
+        <div class="card-body p-0 bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-center border-bottom">
+                        <tr class="small text-uppercase fw-bold text-muted">
+                            <th style="width: 100px;">Jenis</th>
+                            <th>Kode</th>
+                            <th class="text-start">Nama Item / Deskripsi</th>
+                            <th class="text-end">Harga Satuan</th>
+                            <th style="width: 80px;">Qty</th>
+                            <th class="text-end pe-4">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (details && details.length > 0) { %>
+                            <% details.forEach(item => { %>
+                                <tr>
+                                    <td class="text-center">
+                                        <% if (item.itemType === 'part') { %>
+                                            <span class="badge bg-danger-soft text-danger border border-danger border-opacity-25 px-2 rounded-3 small">
+                                                <i class="fas fa-box me-1"></i> PART
+                                            </span>
+                                        <% } else { %>
+                                            <span class="badge bg-warning-soft text-warning border border-warning border-opacity-25 px-2 rounded-3 small text-dark">
+                                                <i class="fas fa-hand-holding-wrench me-1"></i> JASA
+                                            </span>
+                                        <% } %>
+                                    </td>
+                                    <td class="text-center"><code class="text-muted fw-bold"><%= item.itemCode %></code></td>
+                                    <td>
+                                        <div class="fw-bold text-dark"><%= item.itemName %></div>
+                                        <small class="text-muted"><%= item.itemType === 'part' ? 'Suku Cadang' : 'Layanan Jasa' %></small>
+                                    </td>
+                                    <td class="text-end text-muted">Rp <%= (item.pricePerUnit || 0).toLocaleString('id-ID') %></td>
+                                    <td class="text-center fw-bold text-dark"><%= item.quantity %></td>
+                                    <td class="text-end fw-bold text-primary pe-4">Rp <%= (item.subTotal || 0).toLocaleString('id-ID') %></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="fas fa-search fa-3x mb-3 opacity-25"></i>
+                                    <p class="mb-0">Tidak ada rincian item dalam transaksi ini.</p>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-emerald-gradient { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .bg-info-gradient { background: linear-gradient(135deg, #0dcaf0, #0aa2c0); }
+    .bg-danger-soft { background-color: rgba(220, 53, 69, 0.1); }
+    .bg-warning-soft { background-color: rgba(255, 193, 7, 0.15); }
+    .bg-info-soft { background-color: rgba(13, 202, 240, 0.1); }
+    
+    .btn-emerald { background-color: #2ecc71; color: white; border: none; }
+    .btn-emerald:hover { background-color: #27ae60; color: white; transform: translateY(-2px); }
+    
+    .font-monospace { font-family: 'Courier New', Courier, monospace; letter-spacing: 1px; }
+    .shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05); }
+    .btn-white { background: #fff; }
+    .btn-white:hover { background: #f8f9fa; }
+    
+    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+</style>

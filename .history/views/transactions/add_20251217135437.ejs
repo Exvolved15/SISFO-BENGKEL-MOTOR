@@ -1,0 +1,109 @@
+<button type="submit" class="btn btn-success btn-lg mt-3" id="submitButton" disabled>Proses Transaksi</button>
+
+<script>
+    // 1. Ambil data dari server (EJS akan mengganti ini dengan data asli saat render)
+    // Gunakan tanda kutip jika perlu, atau pastikan data dikirim dari controller
+    const PARTS = <%- JSON.stringify(parts || []) %>;
+    const SERVICES = <%- JSON.stringify(services || []) %>;
+    let TRANSACTION_ITEMS = [];
+    let rowCounter = 0;
+
+    function formatRupiah(number) {
+        return new Intl.NumberFormat('id-ID').format(number);
+    }
+
+    // Fungsi Tambah Baris (Perbaikan Stok Undefined)
+    function addItemRow(type) {
+        rowCounter++;
+        const tableBody = document.querySelector('#itemTable tbody');
+        const newRow = tableBody.insertRow();
+        newRow.dataset.itemType = type;
+        newRow.id = 'row-' + rowCounter;
+
+        let options = `<option value="">-- Pilih ${type === 'part' ? 'Suku Cadang' : 'Jasa'} --</option>`;
+        
+        if (type === 'part') {
+            PARTS.forEach(p => {
+                // Gunakan pengecekan nama field stock yang mungkin berbeda di DB
+                const stockVal = p.stock !== undefined ? p.stock : (p.stok !== undefined ? p.stok : 0);
+                const priceVal = p.price || p.sellingPrice || 0;
+                options += `<option value="${p._id}" data-price="${priceVal}" data-stock="${stockVal}">
+                    [${p.code || 'N/A'}] ${p.name} (Stok: ${stockVal})
+                </option>`;
+            });
+        } else {
+            SERVICES.forEach(s => {
+                options += `<option value="${s._id}" data-price="${s.price || 0}">
+                    [${s.serviceCode || s.code}] ${s.serviceName || s.name}
+                </option>`;
+            });
+        }
+
+        newRow.innerHTML = `
+            <td><select class="form-select" onchange="updateRow('${newRow.id}', this)" required>${options}</select></td>
+            <td data-type="price">Rp 0</td>
+            <td><input type="number" value="1" min="1" class="form-control" data-type="qty" oninput="calculateTotal()"></td>
+            <td data-type="subtotal">Rp 0</td>
+            <td><button type="button" class="btn btn-danger" onclick="this.closest('tr').remove(); calculateTotal();">X</button></td>
+        `;
+    }
+
+    function updateRow(rowId, select) {
+        const row = document.getElementById(rowId);
+        const opt = select.options[select.selectedIndex];
+        if (opt.value) {
+            row.dataset.itemId = opt.value;
+            const price = parseFloat(opt.dataset.price) || 0;
+            row.querySelector('[data-type="price"]').innerText = formatRupiah(price);
+        }
+        calculateTotal();
+    }
+
+    function calculateTotal() {
+        let total = 0;
+        TRANSACTION_ITEMS = [];
+        document.querySelectorAll('#itemTable tbody tr').forEach(row => {
+            const price = parseFloat(row.querySelector('[data-type="price"]').innerText.replace(/[^0-9]/g, '')) || 0;
+            const qty = parseInt(row.querySelector('[data-type="qty"]').value) || 0;
+            const sub = price * qty;
+            total += sub;
+            row.querySelector('[data-type="subtotal"]').innerText = formatRupiah(sub);
+            if(row.dataset.itemId) {
+                TRANSACTION_ITEMS.push({ itemId: row.dataset.itemId, quantity: qty, pricePerUnit: price });
+            }
+        });
+        document.getElementById('totalAmountDisplay').innerText = formatRupiah(total);
+        document.getElementById('submitButton').disabled = (TRANSACTION_ITEMS.length === 0);
+    }
+
+    // LOGIKA PENGIRIMAN JSON (Mencegah customerName is not defined)
+    document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const payload = {
+            customerName: document.getElementById('customerName').value,
+            vehicleLicense: document.getElementById('vehicleLicense').value,
+            itemDetails: TRANSACTION_ITEMS,
+            paymentMethod: document.getElementById('paymentMethod').value,
+            totalAmount: total, // pastikan variabel total terjangkau atau hitung ulang
+            notes: document.getElementById('notes').value
+        };
+
+        try {
+            const res = await fetch('/api/jobs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                alert('Transaksi Berhasil!');
+                window.location.href = '/kasir/dashboard';
+            } else {
+                const err = await res.json();
+                alert('Gagal: ' + err.message);
+            }
+        } catch (error) {
+            alert('Kesalahan koneksi ke server.');
+        }
+    });
+</script>

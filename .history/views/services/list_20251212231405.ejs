@@ -1,0 +1,35 @@
+<h1><%= title %></h1>
+<p>Daftar layanan jasa servis yang tersedia.</p>
+
+<a href="/services/add" class="btn btn-success mb-3">Tambah Jasa Baru</a>
+
+<% if (services.length > 0) { %>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Kode Jasa</th>
+                    <th>Nama Jasa</th>
+                    <th>Harga (Rp)</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% services.forEach(service => { %>
+                    <tr>
+                        <td><%= service.serviceCode %></td>
+                        <td><%= service.serviceName %></td>
+                        <td><%= service.price.toLocaleString('id-ID') %></td>
+                        <td>
+                            <a href="/services/edit/<%= service._id %>" class="btn btn-sm btn-warning me-2">Edit</a>
+                            </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+<% } else { %>
+    <div class="alert alert-info" role="alert">
+        Belum ada data jasa servis yang tersimpan.
+    </div>
+<% } %>

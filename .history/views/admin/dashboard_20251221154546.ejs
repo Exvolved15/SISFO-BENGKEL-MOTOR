@@ -1,0 +1,62 @@
+<div class="container-fluid px-4 py-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+    
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white h-100 border-0 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Manajemen User</h5>
+                    <p class="small opacity-75">Kelola mekanik & kasir</p>
+                    <a href="/users" class="btn btn-light btn-sm mt-2">Buka Panel</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white h-100 border-0 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Data Jasa</h5>
+                    <p class="small opacity-75">Harga layanan servis</p>
+                    <a href="/services" class="btn btn-light btn-sm mt-2">Buka Panel</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark h-100 border-0 shadow">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">Suku Cadang</h5>
+                    <p class="small text-muted">Monitor stok barang</p>
+                    <a href="/parts" class="btn btn-dark btn-sm mt-2">Buka Panel</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white h-100 border-0 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Transaksi</h5>
+                    <p class="small opacity-75">Laporan & Invoice</p>
+                    <a href="/transactions" class="btn btn-light btn-sm mt-2">Buka Panel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 font-weight-bold text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Stok Menipis (Segera Restock)</h6>
+        </div>
+        <div class="card-body">
+            <table class="table table-sm">
+                <thead><tr><th>Nama Barang</th><th>Stok</th><th>Aksi</th></tr></thead>
+                <tbody>
+                    <% parts.forEach(p => { %>
+                        <tr>
+                            <td><%= p.name %></td>
+                            <td><span class="badge bg-danger"><%= p.stock %></span></td>
+                            <td><a href="/parts/edit/<%= p._id %>" class="btn btn-link btn-sm">Update Stok</a></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

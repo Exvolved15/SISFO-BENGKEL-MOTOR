@@ -1,0 +1,58 @@
+<div class="container mt-4">
+    <h2>Selamat Datang, <%= user.name %></h2>
+    <hr>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5>Transaksi Baru</h5>
+                    <p>Input servis pelanggan baru.</p>
+                    <a href="/transactions/add" class="btn btn-light btn-sm">Buka Form</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header bg-dark text-white">Riwayat Transaksi Terakhir</div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Invoice</th>
+                        <th>Pelanggan</th>
+                        <th>Status</th> <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (transactions && transactions.length > 0) { %>
+                        <% transactions.forEach(trx => { %>
+                        <tr>
+                            <td><strong><%= trx.invoiceNumber %></strong></td>
+                            <td>
+                                <%= trx.customerName || (trx.customer ? trx.customer.name : 'Pelanggan') %> 
+                                (<%= trx.vehicleLicense %>)
+                            </td>
+                            <td>
+                                <% if (trx.status === 'completed' || trx.status === 'Selesai') { %>
+                                    <span class="badge bg-success">Selesai</span>
+                                <% } else { %>
+                                    <span class="badge bg-warning text-dark">Proses</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <a href="/transactions/print/<%= trx._id %>" target="_blank" class="btn btn-sm btn-dark">Resi</a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Belum ada riwayat transaksi hari ini.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

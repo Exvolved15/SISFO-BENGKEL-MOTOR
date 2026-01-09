@@ -1,0 +1,52 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Sisfo Bengkel</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'home' ? 'active' : '' %>" aria-current="page" href="/">Beranda</a>
+                </li>
+                
+                <% if (typeof user !== 'undefined' && user.role === 'admin') { %>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'parts' ? 'active' : '' %>" href="/parts">Suku Cadang</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'services' ? 'active' : '' %>" href="/services">Jasa Servis</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'transactions' ? 'active' : '' %>" href="/transactions">Transaksi</a>
+                </li>
+                <% } %>
+                
+                <% if (typeof user !== 'undefined' && user.role === 'mekanik') { %>
+                <li class="nav-item">
+                    <a class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'jobs' ? 'active' : '' %>" href="/mekanik/jobs">Pekerjaan Saya</a>
+                </li>
+                <% } %>
+            </ul>
+            
+            <ul class="navbar-nav ms-auto">
+                <% if (typeof user !== 'undefined') { %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= activePage === 'profile' ? 'active' : '' %>" href="/profile">
+                            Profil (<%= user.role %>)
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-warning" href="/logout">Logout</a> 
+                    </li>
+                <% } else { %>
+                    <li class="nav-item">
+                        <a class="nav-link <%= activePage === 'login' ? 'active' : '' %>" href="/login">Login</a>
+                    </li>
+                <% } %>
+            </ul>
+
+        </div>
+    </div>
+</nav>

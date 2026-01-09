@@ -1,0 +1,156 @@
+<div class="container-fluid px-4 py-4 animate-fade-in">
+    <div class="card border-0 shadow-sm mb-4 overflow-hidden rounded-4">
+        <div class="card-body p-0">
+            <div class="row g-0">
+                <div class="col-md-8 p-4 d-flex align-items-center bg-white">
+                    <div class="profile-avatar-container rounded-circle bg-info d-flex align-items-center justify-content-center text-white shadow-sm overflow-hidden border border-4 border-light" 
+                         style="width: 90px; height: 90px; min-width: 90px;">
+                         <% if (user.profileImage) { %>
+                            <img src="<%= user.profileImage %>?t=<%= Date.now() %>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                        <% } else { %>
+                            <span style="font-size: 2.5rem; font-weight: bold;"><%= user.name.charAt(0).toUpperCase() %></span>
+                        <% } %>
+                    </div>
+                    
+                    <div class="ms-4">
+                        <h3 class="mb-1 fw-bold text-dark">Selamat Datang, <%= user.name %>!</h3>
+                        <p class="text-muted mb-0 d-flex align-items-center flex-wrap">
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-3 py-2 rounded-pill me-2">
+                                <i class="fas fa-crown me-1 text-warning"></i> Pelanggan Setia
+                            </span>
+                            <span class="me-3"><i class="fas fa-envelope text-muted me-1"></i> <%= user.email %></span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 bg-light p-4 d-flex align-items-center border-start border-opacity-10">
+                    <div class="w-100 text-center">
+                        <div class="small text-muted mb-2 text-uppercase fw-bold">Akses Member</div>
+                        <div class="p-2 bg-white rounded-3 border mb-3 shadow-sm">
+                            <i class="fas fa-shield-halved text-info me-1"></i> <span class="small fw-bold text-dark">CUSTOMER AREA</span>
+                        </div>
+                        <a href="/users/edit/<%= user._id %>" class="btn btn-sm btn-outline-info w-100 rounded-pill">
+                            <i class="fas fa-user-pen me-1"></i> Update Profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
+        <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fas fa-motorcycle me-2 text-info"></i>Monitor Servis Kendaraan</h5>
+            <span class="badge bg-info-soft text-info rounded-pill px-3">Live Status</span>
+        </div>
+        <div class="card-body p-4">
+            <% if (typeof myJobs !== 'undefined' && myJobs.length > 0) { %>
+                <div class="row g-4">
+                    <% myJobs.forEach(job => { %>
+                        <div class="col-md-6 col-lg-4">
+                            <% 
+                                let statusClass = 'secondary';
+                                let statusLabel = 'Menunggu Antrean';
+                                let iconClass = 'fa-clock';
+                                if(job.status === 'on_progress') { 
+                                    statusClass = 'warning text-dark'; 
+                                    statusLabel = 'Sedang Dikerjakan'; 
+                                    iconClass = 'fa-tools fa-spin';
+                                } else if(job.status === 'completed') { 
+                                    statusClass = 'success'; 
+                                    statusLabel = 'Selesai & Siap'; 
+                                    iconClass = 'fa-check-circle';
+                                }
+                            %>
+                            <div class="card border-0 shadow-sm rounded-4 h-100 card-hover-simple border-bottom border-4 border-<%= statusClass.split(' ')[0] %>">
+                                <div class="card-body p-4 text-center">
+                                    <div class="icon-shape bg-<%= statusClass.split(' ')[0] %>-soft text-<%= statusClass.split(' ')[0] %> rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                        <i class="fas <%= iconClass %> fa-2x"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-dark mb-1"><%= job.motorName %></h5>
+                                    <span class="badge bg-dark font-monospace mb-3 px-3 py-2"><%= job.vehicleLicense %></span>
+                                    
+                                    <div class="mt-2">
+                                        <span class="badge bg-<%= statusClass %> rounded-pill px-3 py-2 fw-bold w-100 shadow-sm">
+                                            <%= statusLabel.toUpperCase() %>
+                                        </span>
+                                    </div>
+                                    
+                                    <hr class="my-3 opacity-10">
+                                    <div class="d-flex justify-content-between align-items-center small">
+                                        <span class="text-muted">Update terakhir:</span>
+                                        <span class="fw-bold text-dark"><%= new Date(job.updatedAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}) %></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <div class="mt-5">
+                    <h6 class="fw-bold text-muted mb-3"><i class="fas fa-list me-2"></i>Detail Riwayat Lengkap</h6>
+                    <div class="table-responsive bg-white rounded-4 border">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr class="small text-uppercase">
+                                    <th class="ps-4">No. Invoice</th>
+                                    <th>Unit Motor</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-4">Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% myJobs.forEach(job => { %>
+                                    <tr>
+                                        <td class="ps-4"><span class="fw-bold text-primary">#<%= job.invoiceNumber %></span></td>
+                                        <td><%= job.motorName %></td>
+                                        <td>
+                                            <% if (job.status === 'completed') { %>
+                                                <span class="text-success small fw-bold"><i class="fas fa-check-circle me-1"></i>Selesai</span>
+                                            <% } else { %>
+                                                <span class="text-muted small fw-bold"><i class="fas fa-spinner fa-spin me-1"></i>Proses</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="text-end pe-4 small text-muted"><%= new Date(job.updatedAt).toLocaleDateString('id-ID') %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-clipboard-list fa-4x text-muted opacity-25"></i>
+                    </div>
+                    <h5 class="text-dark fw-bold">Belum Ada Riwayat Servis</h5>
+                    <p class="text-muted mx-auto" style="max-width: 400px;">Anda belum memiliki riwayat pengerjaan motor di bengkel kami. Kunjungi bengkel kami untuk mendapatkan servis terbaik!</p>
+                    <a href="/about" class="btn btn-info text-white rounded-pill px-4 shadow-sm mt-3">
+                        <i class="fas fa-map-location-dot me-2"></i> Cek Lokasi Bengkel
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CUSTOM CUSTOMER THEME */
+    .bg-info-soft { background-color: rgba(13, 202, 240, 0.1); }
+    .bg-warning-soft { background-color: rgba(255, 193, 7, 0.1); }
+    .bg-success-soft { background-color: rgba(25, 135, 84, 0.1); }
+    .bg-secondary-soft { background-color: rgba(108, 117, 125, 0.1); }
+
+    .card-hover-simple {
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    .card-hover-simple:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(13, 202, 240, 0.1) !important;
+    }
+
+    .font-monospace { font-family: 'Courier New', Courier, monospace; letter-spacing: 1px; }
+    .animate-fade-in { animation: fadeIn 0.8s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>

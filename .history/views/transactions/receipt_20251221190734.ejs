@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Struk - <%= transaction.invoiceNumber %></title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; width: 80mm; margin: 0 auto; font-size: 12px; color: #000; }
+        .text-center { text-align: center; }
+        .line { border-bottom: 1px dashed #000; margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        .item-name { padding-top: 8px; font-weight: bold; display: block; }
+        .item-details { padding-bottom: 4px; }
+        .total-row { font-weight: bold; font-size: 14px; }
+        @media print {
+            @page { margin: 0; }
+            body { margin: 5mm; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+    <table>
+        <% let subtotalDariItem = 0; %>
+        <% details.forEach(item => { 
+            let totalPerItem = item.quantity * item.pricePerUnit;
+            subtotalDariItem += totalPerItem;
+        %>
+            <tr>
+                <td colspan="2" style="padding-top:5px; font-weight:bold;"><%= item.itemName %></td>
+            </tr>
+            <tr>
+                <td><%= item.quantity %> x <%= item.pricePerUnit.toLocaleString('id-ID') %></td>
+                <td align="right"><%= totalPerItem.toLocaleString('id-ID') %></td>
+            </tr>
+        <% }) %>
+    </table>
+
+    <div class="line"></div>
+
+    <% 
+        // LOGIKA PENYELAMAT:
+        // Gunakan grandTotal dari DB (pasti ada karena ini yang dibayar)
+        let totalBersih = transaction.grandTotal || 0;
+        
+        // Gunakan subtotal kotor (prioritaskan hitungan ulang dari item di atas)
+        let totalKotor = subtotalDariItem > 0 ? subtotalDariItem : (transaction.totalAmount || totalBersih);
+        
+        // Hitung selisih
+        let nominalDiskon = totalKotor - totalBersih;
+        if (nominalDiskon < 0) nominalDiskon = 0; // Jaga-jaga jika salah input
+
+        // Hitung persen
+        let persen = totalKotor > 0 ? Math.round((nominalDiskon / totalKotor) * 100) : 0;
+    %>
+
+    <table>
+        <tr>
+            <td>Total:</td>
+            <td align="right">Rp <%= totalKotor.toLocaleString('id-ID') %></td>
+        </tr>
+        <tr>
+            <td>Diskon (<%= persen %>%):</td>
+            <td align="right">- Rp <%= nominalDiskon.toLocaleString('id-ID') %></td>
+        </tr>
+        <tr style="font-weight: bold; font-size: 14px;">
+            <td style="padding-top: 10px;">TOTAL AKHIR:</td>
+            <td align="right" style="padding-top: 10px;">Rp <%= totalBersih.toLocaleString('id-ID') %></td>
+        </tr>
+    </table>
+    </body>
+</html>

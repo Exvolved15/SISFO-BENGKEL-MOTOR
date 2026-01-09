@@ -1,0 +1,53 @@
+<h1><%= title %></h1>
+<p>Berikut adalah daftar suku cadang yang tersedia di bengkel.</p>
+
+<a href="/parts/add" class="btn btn-success mb-3">Tambah Suku Cadang Baru</a>
+
+<% if (parts.length > 0) { %>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>No. Invoice</th>
+                    <th>Pelanggan</th>
+                    <th>Total Kotor</th>
+                    <th>Diskon</th> <th>Total Bayar</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% transactions.forEach(trx => { %>
+                <tr>
+                    <td><%= trx.invoiceNumber %></td>
+                    <td><%= trx.customerName %></td>
+                    
+                    <td>Rp <%= trx.totalAmount.toLocaleString('id-ID') %></td>
+                    
+                    <td class="text-danger">
+                        - Rp <%= (trx.discount || 0).toLocaleString('id-ID') %>
+                    </td>
+                    
+                    <td class="fw-bold">
+                        Rp <%= (trx.grandTotal || (trx.totalAmount - trx.discount)).toLocaleString('id-ID') %>
+                    </td>
+                    
+                    <td>
+                        <span class="badge <%= trx.status === 'lunas' ? 'bg-success' : 'bg-warning' %>">
+                            <%= trx.status %>
+                        </span>
+                    </td>
+                    <td>
+                        <a href="/api/transactions/<%= trx._id %>/detail" class="btn btn-info btn-sm">Detail</a>
+                        <a href="/api/transactions/print/<%= trx._id %>" target="_blank" class="btn btn-secondary btn-sm">Resi</a>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+<% } else { %>
+    <div class="alert alert-info" role="alert">
+        Belum ada data suku cadang yang tersimpan.
+    </div>
+<% } %>

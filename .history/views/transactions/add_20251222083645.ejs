@@ -1,0 +1,272 @@
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Transaksi Baru</h1>
+    
+    <div id="alertArea" class="mt-3"></div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-cart-plus me-1"></i> Form Transaksi Kasir
+                </div>
+                <div class="card-body">
+                    <form id="transactionForm">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Pilih Nama Pelanggan</label>
+                            <select name="customer" id="customerSelect" class="form-select" required>
+                                <option value="">-- Pilih Pelanggan --</option>
+                                <% users.forEach(cust => { %>
+                                    <option value="<%= cust._id %>"><%= cust.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nomor Polisi</label>
+                            <input type="text" class="form-control" id="vehicleLicense" name="vehicleLicense" placeholder="Contoh: B 1234 ABC" required>
+                        </div>
+
+                        <hr>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Tambah Suku Cadang</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="partSelect">
+                                        <option value="" selected disabled>-- Pilih Suku Cadang --</option>
+                                        <% parts.forEach(part => { %>
+                                            <option value="<%= part._id %>" 
+                                                    data-name="<%= part.name %>" 
+                                                    data-price="<%= part.sellingPrice || part.price %>" 
+                                                    data-stock="<%= part.stock %>">
+                                                <%= part.name %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                    <button class="btn btn-success" type="button" onclick="addItem('part')">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Tambah Jasa Servis</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="serviceSelect">
+                                        <option value="" selected disabled>-- Pilih Jasa --</option>
+                                        <% if(typeof services !== 'undefined') { %>
+                                            <% services.forEach(srv => { %>
+                                                <option value="<%= srv._id %>" 
+                                                        data-type="service"
+                                                        data-name="<%= srv.name %>" 
+                                                        data-code="<%= srv.code %>"
+                                                        data-price="<%= srv.price %>">
+                                                    <%= srv.name %> - Rp <%= srv.price.toLocaleString('id-ID') %>
+                                                </option>
+                                            <% }) %>
+                                        <% } %>
+                                    </select>
+                                    <button class="btn btn-info text-white" type="button" onclick="addItem('service')">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive mb-4">
+                            <table class="table table-bordered table-striped" id="cartTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Nama Item</th>
+                                        <th>Harga</th>
+                                        <th style="width:100px;">Qty</th>
+                                        <th>Subtotal</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold">TOTAL:</td>
+                                        <td colspan="2" class="fw-bold fs-5" id="displayTotal">Rp 0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Mekanik</label>
+                                <select class="form-select" id="assignedTo">
+                                    <option value="">-- Langsung Bayar (Tanpa Mekanik) --</option>
+                                    <% if (typeof mechanics !== 'undefined' && mechanics.length > 0) { %>
+                                        <% mechanics.forEach(mech => { %>
+                                            <option value="<%= mech._id %>"><%= mech.name %></option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Metode Bayar</label>
+                                <select class="form-select" id="paymentMethod">
+                                    <option value="Cash">Tunai</option>
+                                    <option value="Transfer">Transfer</option>
+                                    <option value="QRIS">QRIS</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Catatan</label>
+                                <input type="text" class="form-control" id="notes" placeholder="Catatan servis...">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4 offset-md-8">
+                                <label class="form-label fw-bold">Diskon (%)</label>
+                                <input type="number" class="form-control text-end" id="discountPercent" value="0" min="0" max="100" onchange="renderCart()">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-3" id="btnSubmit">
+                            SIMPAN TRANSAKSI
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Inisialisasi State
+    let cart = [];
+
+    // 2. Fungsi Tambah Item
+    function addItem(type) {
+        const selectId = (type === 'part') ? 'partSelect' : 'serviceSelect';
+        const selectElement = document.getElementById(selectId);
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+    
+        if (!selectedOption || selectedOption.value === "") return;
+    
+        // Ambil data-code dari atribut HTML
+        const itemCode = selectedOption.getAttribute('data-code') || "UNK-001"; 
+        const itemId = selectedOption.value;
+        const name = selectedOption.getAttribute('data-name');
+        const price = parseInt(selectedOption.getAttribute('data-price')) || 0;
+    
+        cart.push({
+            itemId: itemId,
+            itemType: type,
+            name: name,
+            itemCode: itemCode, // Pastikan ini masuk ke array cart
+            pricePerUnit: price,
+            quantity: 1
+        });
+    
+        renderCart();
+    }
+    // 3. Render Tabel dan Kalkulasi Total
+// Di dalam script add.ejs
+
+function renderCart() {
+    const tbody = document.querySelector("#cartTable tbody");
+    const displayTotal = document.getElementById("displayTotal");
+    tbody.innerHTML = "";
+    let grandTotal = 0;
+
+    if (cart.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">Keranjang Kosong</td></tr>';
+        displayTotal.innerText = "Rp 0";
+        return;
+    }
+
+    cart.forEach((item, index) => {
+        const subtotal = item.quantity * item.pricePerUnit;
+        grandTotal += subtotal;
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${item.name}</td>
+                <td>Rp ${item.pricePerUnit.toLocaleString('id-ID')}</td>
+                <td>
+                    <input type="number" value="${item.quantity}" min="1" 
+                           onchange="updateQty(${index}, this.value)" class="form-control form-control-sm">
+                </td>
+                <td>Rp ${subtotal.toLocaleString('id-ID')}</td>
+                <td><button type="button" onclick="removeItem(${index})" class="btn btn-danger btn-sm">X</button></td>
+            </tr>
+        `;
+    });
+
+    const discountPercent = parseInt(document.getElementById("discountPercent").value) || 0;
+    const discountAmount = (grandTotal * discountPercent) / 100;
+    const finalTotal = grandTotal - discountAmount;
+
+    document.getElementById("displayTotal").innerText = "Rp " + finalTotal.toLocaleString('id-ID');
+
+}
+
+    // 4. Update Quantity
+    function updateQty(index, val) {
+        let newQty = parseInt(val);
+        if (isNaN(newQty) || newQty < 1) newQty = 1;
+        cart[index].quantity = newQty;
+        renderCart();
+    }
+
+    // 5. Hapus Item
+    function removeItem(index) {
+        cart.splice(index, 1);
+        renderCart();
+    }
+
+
+
+    // 6. Submit Data
+    document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+    
+        // Validasi keranjang
+        if (cart.length === 0) {
+            return alert("Pilih suku cadang atau jasa dulu!");
+        }
+    
+        const customerId = document.getElementById('customerSelect').value; // Mengambil ID dari dropdown
+
+        // Ambil data dari elemen yang sudah kita beri ID tadi
+        const formData = {
+            customer: customerId,
+            vehicleLicense: document.getElementById('vehicleLicense').value,
+            totalAmount: cart.reduce((sum, item) => sum + (item.quantity * item.pricePerUnit), 0),
+            discount: 0, // Bisa dihitung dari discountPercent jika ada
+            grandTotal: 0, // Hitung total akhir
+            paymentMethod: document.getElementById('paymentMethod').value,
+            notes: document.getElementById('notes').value || '-',
+            assignedTo: document.getElementById('assignedTo').value || null,
+            itemDetails: JSON.stringify(cart) // Kirim data barang/jasa
+        };
+        
+        // Hitung Grand Total sebelum kirim
+        formData.grandTotal = formData.totalAmount - formData.discount;
+    
+        try {
+            const response = await fetch('/api/transactions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+    
+            const result = await response.json();
+            if (result.success) {
+                alert('Transaksi Berhasil!');
+                window.location.href = '/transactions'; // Ke riwayat
+            } else {
+                alert('Error: ' + result.message);
+            }
+        } catch (err) {
+            alert('Gagal terhubung ke server');
+        }
+    });
+</script>

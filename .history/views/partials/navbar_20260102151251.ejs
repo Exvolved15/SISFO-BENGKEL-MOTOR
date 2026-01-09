@@ -1,0 +1,128 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="<%= (typeof user !== 'undefined' && user) ? '/dashboard-redirect' : '/' %>">
+            <div class="bg-success text-white rounded-3 p-1 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                <i class="fas fa-screwdriver-wrench"></i>
+            </div>
+            <span>ACR Motor</span>
+        </a>
+
+        <div class="ms-3 d-none d-lg-block">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link text-white <%= (typeof activePage !== 'undefined' && activePage === 'home') ? 'fw-bold active-highlight' : 'opacity-75' %>" href="/">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white <%= (typeof activePage !== 'undefined' && activePage === 'about') ? 'fw-bold active-highlight' : 'opacity-75' %>" href="/about">About</a>
+                </li>
+            </ul>
+        </div>
+
+        <button class="navbar-toggler border-0 shadow-none ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navInternal">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navInternal">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <li class="nav-item dropdown ms-lg-3">
+                         </li>
+                <% } else { %>
+                    <li class="nav-item">
+                        <a href="/login" class="btn btn-success btn-sm px-4 rounded-pill fw-bold">Masuk</a>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</nav>
+<style>
+    /* 1. Efek Highlight Garis Bawah */
+    .active-highlight::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 8px;
+        right: 8px;
+        height: 3px;
+        background: #2ecc71;
+        border-radius: 10px;
+        animation: expand 0.3s ease-out;
+    }
+
+    @keyframes expand {
+        from { width: 0; left: 50%; }
+        to { width: auto; left: 8px; }
+    }
+
+    /* 2. Animasi Dropdown Slide-In */
+    .animate-slide-in {
+        animation: slideIn 0.2s ease-out;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 3. Perbaikan Visual Profile Pill */
+    .profile-pill {
+        background: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .profile-pill:hover {
+        background: rgba(46, 204, 113, 0.15);
+        border-color: rgba(46, 204, 113, 0.4);
+    }
+
+    .hover-link {
+        transition: color 0.3s ease;
+    }
+
+    .hover-link:hover {
+        color: #2ecc71 !important;
+    }
+
+    .btn-hover-grow {
+        transition: transform 0.2s ease;
+    }
+
+    .btn-hover-grow:hover {
+        transform: scale(1.05);
+    }
+    /* Memperbaiki area profil di navbar agar tidak tumpang tindih atau terpotong */
+    .nav-profile-dropdown {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 5px 15px;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-profile-dropdown:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Memastikan dropdown menu muncul di atas elemen lain */
+    .dropdown-menu-end {
+        right: 0;
+        left: auto;
+        z-index: 9999 !important;
+        margin-top: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: none;
+        border-radius: 15px;
+    }
+
+    /* Mengatur ukuran foto profil di navbar agar konsisten */
+    .navbar-avatar {
+        width: 35px;
+        height: 35px;
+        object-fit: cover;
+        border: 2px solid #fff;
+    }
+</style>

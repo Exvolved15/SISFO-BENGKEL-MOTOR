@@ -1,0 +1,112 @@
+<body class="bg-light"> 
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5"> 
+                <div class="card shadow-lg p-4"> 
+                    <h2 class="text-center mb-4">Login Sisfo Bengkel</h2>
+                    
+                    <form id="loginForm"> 
+                        <% if (query.success) { %>
+                            <div class="alert alert-success text-center">Registrasi berhasil! Silakan login.</div>
+                        <% } %>
+                        
+                        <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required autocomplete="username">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        Belum punya akun? <a href="/register">Daftar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"; 
+        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"; 
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNclQBPgOf9wS0hCM6jsWerAJ_-mz_AOA",
+            authDomain: "bengkelan-motor.firebaseapp.com",
+            projectId: "bengkelan-motor",
+            storageBucket: "bengkelan-motor.firebasestorage.app",
+            messagingSenderId: "86184705378",
+            appId: "1:86184705378:web:018c12ce6261c9a522c03b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app); 
+
+        const loginForm = document.getElementById('loginForm');
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessageDiv = document.getElementById('errorMessage');
+            
+            // Reset pesan error setiap kali tombol ditekan
+            errorMessageDiv.classList.add('d-none');
+            errorMessageDiv.innerText = "";
+
+            try {
+                // Bersihkan sesi lama di sisi Client
+                await signOut(auth);
+                
+                // 1. Login ke Firebase (Client Side)
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const idToken = await userCredential.user.getIdToken(); 
+
+                // 2. Verifikasi ke Server Node.js
+                const res = await fetch('/api/auth/verify-token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idToken: idToken }) 
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Logika Redirect Berdasarkan Role
+                    if (data.user.role === 'mekanik') {
+                        // PERBAIKAN: Arahkan ke rute View (/mekanik), bukan rute API (/api/...)
+                        window.location.href = '/mekanik/jobs';
+                    } else if (data.user.role === 'kasir') {
+                        window.location.href = '/kasir/dashboard';
+                    } else {
+                        // Default Admin
+                        window.location.href = '/'; 
+                    }
+                } else {
+                    throw new Error(data.message || 'Gagal verifikasi sesi di server.');
+                }
+
+            } catch (error) {
+                console.error("Login Gagal:", error); 
+                
+                // Tampilkan error yang rapi
+                let pesan = error.message;
+                if (pesan.includes("auth/invalid-credential")) {
+                    pesan = "Email atau Password salah.";
+                } else if (pesan.includes("buffering timed out")) {
+                    pesan = "Koneksi database server sedang sibuk. Coba restart server.";
+                }
+                
+                errorMessageDiv.innerText = "Login Gagal: " + pesan;
+                errorMessageDiv.classList.remove('d-none');
+            }
+        });
+    </script>
+</body>

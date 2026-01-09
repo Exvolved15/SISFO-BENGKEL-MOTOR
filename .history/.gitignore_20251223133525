@@ -1,0 +1,20 @@
+# Dependency folders (sangat berat, tidak boleh di-upload)
+node_modules/
+
+# Environment variables (berisi password database & JWT Secret)
+.env
+
+# Firebase Service Accounts (Kunci rahasia Admin SDK Anda)
+firebase-service-account.json
+firebase-key.json
+*.json
+!package.json
+!package-lock.json
+
+# Uploads (Gambar/foto yang diunggah user saat testing)
+public/uploads/
+uploads/
+
+# OS Metadata
+.DS_Store
+Thumbs.db

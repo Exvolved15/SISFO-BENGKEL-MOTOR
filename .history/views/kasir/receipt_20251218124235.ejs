@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Struk Pembayaran - <%= transaction.invoiceNumber %></title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; width: 80mm; margin: 0 auto; padding: 10px; font-size: 12px; }
+        .text-center { text-align: center; }
+        .header { margin-bottom: 10px; border-bottom: 1px dashed #000; padding-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { text-align: left; padding: 2px 0; }
+        .total { border-top: 1px dashed #000; margin-top: 5px; padding-top: 5px; }
+        .footer { margin-top: 20px; font-size: 10px; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="no-print" style="margin-bottom: 10px;">
+        <button onclick="window.print()">Cetak Resi</button>
+        <button onclick="window.close()">Tutup</button>
+    </div>
+
+    <div class="text-center header">
+        <strong>SISFO BENGKEL</strong><br>
+        Jl. Alamat Bengkel Anda<br>
+        Telp: 0812-XXXX-XXXX
+    </div>
+
+    <div>
+        No         : <%= transaction.invoiceNumber %><br>
+        Tanggal    : <%= new Date(transaction.createdAt).toLocaleString('id-ID') %><br>
+        Pelanggann : <%= transaction.customer ? transaction.customer.name : 'Pelanggan' %><br>
+        Unit       : <%= transaction.vehicleLicense %>
+    </div>
+
+    <table>
+        <thead>
+            <tr style="border-bottom: 1px solid #000;">
+                <th>Item</th>
+                <th>Qty</th>
+                <th style="text-align: right;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (transaction.transactionDetails && transaction.transactionDetails.length > 0) { %>
+                <% transaction.transactionDetails.forEach(item => { %>
+                    <tr>
+                        <td><%= item.name %></td>
+                        <td><%= item.quantity %></td>
+                        <td style="text-align: right;"><%= (item.subtotal || 0).toLocaleString('id-ID') %></td>
+                    </tr>
+                <% }) %>
+            <% } %>
+        </tbody>
+    </table>
+
+    <div class="total">
+        <div style="display: flex; justify-content: space-between;">
+            <strong>GRAND TOTAL</strong>
+            <strong>Rp <%= (transaction.totalAmount || 0).toLocaleString('id-ID') %></strong>
+        </div>
+        <div style="margin-top: 5px;">
+            Status: <%= transaction.status.toUpperCase() %><br>
+            Mekanik: <%= transaction.assignedTo ? (transaction.assignedTo.name || 'N/A') : 'N/A' %>
+        </div>
+    </div>
+
+    <div class="text-center footer">
+        -- Terima Kasih --<br>
+        Semoga Kendaraan Anda Sehat Selalu
+    </div>
+</body>
+</html>

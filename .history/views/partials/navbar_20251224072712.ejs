@@ -1,0 +1,71 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="<%= user ? '/dashboard-redirect' : '/' %>">
+            <i class="fas fa-screwdriver-wrench me-2"></i>Sisfo Bengkel
+        </a>
+
+        <div class="d-flex align-items-center ms-lg-4">
+            <ul class="nav flex-row align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-white <%= (typeof activePage !== 'undefined' && activePage === 'home') ? 'fw-bold active border-bottom border-success' : '' %>" href="/">Overview</a>
+                </li>
+                <li class="nav-item border-start border-secondary ms-2 ps-2">
+                    <a class="nav-link px-2 text-white <%= (typeof activePage !== 'undefined' && activePage === 'about') ? 'fw-bold active border-bottom border-success' : '' %>" href="/about">About</a>
+                </li>
+                
+                <% if (typeof user === 'undefined' || !user) { %>
+                <li class="nav-item ms-3">
+                    <a href="/login" class="btn btn-emerald btn-sm px-3 py-1 shadow-sm fw-bold">
+                        <i class="fas fa-sign-in-alt me-1"></i>Masuk
+                    </a>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+
+        <% if (typeof user !== 'undefined' && user) { %>
+            <button class="navbar-toggler border-0 shadow-none ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navInternal">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        <% } %>
+
+        <div class="collapse navbar-collapse" id="navInternal">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <% if (user.role === 'admin' || user.role === 'kasir') { %>
+                        <li class="nav-item"><a class="nav-link" href="/parts"><i class="fas fa-box me-1"></i>Suku Cadang</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/services"><i class="fas fa-concierge-bell me-1"></i>Jasa</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="dropTrans" data-bs-toggle="dropdown">Transaksi</a>
+                            <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
+                                <li><a class="dropdown-item" href="/transactions/add">Baru</a></li>
+                                <li><a class="dropdown-item" href="/transactions">Riwayat</a></li>
+                            </ul>
+                        </li>
+                    <% } %>
+
+                    <% if (user.role === 'mekanik') { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/api/jobs/mechanic/dashboard"><i class="fas fa-tasks me-1"></i>Tugas</a>
+                        </li>
+                    <% } %>
+
+                    <li class="nav-item dropdown ms-lg-3 mt-2 mt-lg-0">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center profile-pill px-3" href="#" id="userProfileDrop" role="button" data-bs-toggle="dropdown">
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 28px; height: 28px; font-weight: bold; font-size: 0.8rem;">
+                                <%= user.name.charAt(0).toUpperCase() %>
+                            </div>
+                            <span class="small text-white"><%= user.name %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow border-secondary mt-2">
+                            <li class="px-3 py-1"><small class="text-muted text-uppercase" style="font-size: 0.6rem;">Role: <%= user.role %></small></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/users/edit/<%= user._id %>"><i class="fas fa-user-circle me-2"></i>Profil</a></li>
+                            <li><a class="dropdown-item text-danger" id="logout-link" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Keluar</a></li>
+                        </ul>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</nav>

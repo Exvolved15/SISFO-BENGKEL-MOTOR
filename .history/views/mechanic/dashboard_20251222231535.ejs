@@ -1,0 +1,223 @@
+<% 
+    // 1. INISIALISASI DATA DI PALING ATAS (Wajib agar Header bisa baca status)
+    let activeJob = null;
+    let pendingJobs = [];
+    let completedJobs = [];
+    
+    if (typeof historyJobs !== 'undefined' && Array.isArray(historyJobs)) {
+        activeJob = historyJobs.find(j => j.status === 'on_progress');
+        pendingJobs = historyJobs.filter(j => j.status === 'pending');
+        completedJobs = historyJobs.filter(j => j.status === 'completed');
+    }
+%>
+
+<div class="container-fluid px-4 py-4">
+    <div class="card border-0 shadow-sm mb-4 overflow-hidden" style="border-radius: 15px;">
+        <div class="card-body p-0">
+            <div class="row g-0">
+                <div class="col-md-8 p-4 d-flex align-items-center bg-white">
+                    <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center text-dark shadow-sm overflow-hidden" 
+                         style="width: 80px; height: 80px; min-width: 80px; border: 3px solid #f8f9fa;">
+                        <% if (user.profileImage) { %>
+                            <img src="<%= user.profileImage %>?t=<%= Date.now() %>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                        <% } else { %>
+                            <span style="font-size: 2rem; font-weight: bold;"><%= user.name.charAt(0).toUpperCase() %></span>
+                        <% } %>
+                    </div>
+                    
+                    <div class="ms-4">
+                        <h3 class="mb-1 fw-bold text-dark">Halo, <%= user.name %>!</h3>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-dark text-warning">Mekanik</span>
+                            <% if (activeJob) { %>
+                                <span class="badge bg-danger pulse"><i class="fas fa-spinner fa-spin me-1"></i> Sedang Sibuk</span>
+                            <% } else { %>
+                                <span class="badge bg-success"><i class="fas fa-check me-1"></i> Siap Bekerja</span>
+                            <% } %>
+                        </div>
+                        <p class="text-muted mb-0 mt-2 small">
+                            <i class="fas fa-id-badge me-1"></i> ID Mekanik: <%= user._id.toString().slice(-6).toUpperCase() %>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 bg-light p-4 d-flex align-items-center border-start">
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small text-muted">Otoritas Sistem</span>
+                            <span class="small fw-bold text-primary">Work Order & Parts</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small text-muted">Progress Hari Ini</span>
+                            <span class="small fw-bold"><%= completedJobs.length %> Selesai</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 6px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: <%= (completedJobs.length / 5) * 100 %>%"></div>
+                        </div>
+                        <a href="/users/edit/<%= user._id %>" class="btn btn-sm btn-outline-dark w-100">
+                            <i class="fas fa-user-cog me-1"></i> Pengaturan Profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-wrench me-2 text-warning"></i>Pekerjaan Berjalan</h5>
+                </div>
+                <div class="card-body p-4">
+                    <% if (activeJob) { %>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="text-muted small d-block">NOMOR INVOICE</label>
+                                <h5 class="fw-bold text-primary"><%= activeJob.invoiceNumber %></h5>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <label class="text-muted small d-block">TIPE MOTOR</label>
+                                <h5 class="fw-bold"><%= activeJob.motorName %></h5>
+                            </div>
+                        </div>
+
+                        <div class="bg-light rounded-3 p-3 mb-4 border-start border-4 border-warning">
+                            <div class="row text-center">
+                                <div class="col-6 border-end">
+                                    <small class="text-muted d-block">No. Polisi</small>
+                                    <span class="badge bg-dark fs-6"><%= activeJob.vehicleLicense %></span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Pelanggan</small>
+                                    <span class="fw-bold text-dark"><%= activeJob.customer?.name || 'Umum' %></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="text-muted small fw-bold mb-2">KELUHAN / INSTRUKSI:</label>
+                            <div class="p-3 bg-white border rounded small text-secondary">
+                                <%= activeJob.description || 'Tidak ada deskripsi pengerjaan.' %>
+                            </div>
+                        </div>
+
+                        <button onclick="finishWork('<%= activeJob._id %>')" class="btn btn-success btn-lg w-100 shadow-sm fw-bold py-3">
+                            <i class="fas fa-check-circle me-2"></i> SELESAIKAN PEKERJAAN
+                        </button>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <i class="fas fa-mug-hot fa-3x text-light mb-3"></i>
+                            <h5 class="text-muted">Tidak Ada Pekerjaan Aktif</h5>
+                            <p class="small text-muted">Silakan pilih pekerjaan dari daftar antrean di bawah.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h6 class="mb-0"><i class="fas fa-list-ol me-2"></i>Antrean Menunggu (Pending)</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3 small">INVOICE</th>
+                                    <th class="small">MOTOR</th>
+                                    <th class="small">CUSTOMER</th>
+                                    <th class="text-center small">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (pendingJobs.length > 0) { %>
+                                    <% pendingJobs.forEach(job => { %>
+                                        <tr>
+                                            <td class="ps-3 fw-bold"><%= job.invoiceNumber %></td>
+                                            <td><%= job.motorName %></td>
+                                            <td><%= job.customer?.name || 'Umum' %></td>
+                                            <td class="text-center">
+                                                <button onclick="startJob('<%= job._id %>')" class="btn btn-sm btn-primary px-3 shadow-sm">
+                                                    Mulai
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted small">Tidak ada antrean pending hari ini.</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4 h-100" style="border-radius: 12px;">
+                <div class="card-header bg-success text-white py-3">
+                    <h6 class="mb-0"><i class="fas fa-history me-2"></i>Riwayat Hari Ini</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <% if (completedJobs.length > 0) { %>
+                            <% completedJobs.forEach(job => { %>
+                                <div class="list-group-item p-3 border-bottom">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold small text-primary">#<%= job.invoiceNumber %></span>
+                                        <span class="text-muted" style="font-size: 0.7rem;">
+                                            <%= new Date(job.updatedAt).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) %>
+                                        </span>
+                                    </div>
+                                    <div class="small fw-bold mt-1"><%= job.motorName %></div>
+                                    <div class="text-muted" style="font-size: 0.75rem;"><%= job.vehicleLicense %></div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="p-5 text-center text-muted">
+                                <i class="fas fa-clipboard-check fa-2x mb-2 opacity-25"></i>
+                                <p class="small">Belum ada riwayat selesai.</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pulse { animation: pulse-animation 2s infinite; }
+    @keyframes pulse-animation { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+    .rounded-3 { border-radius: 10px !important; }
+    .btn-lg { border-radius: 10px; }
+</style>
+
+<script>
+async function startJob(jobId) {
+    if (!confirm('Mulai kerjakan kendaraan ini?')) return;
+    try {
+        const response = await fetch(`/api/jobs/start/${jobId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        if (result.success) { window.location.reload(); } else { alert(result.message); }
+    } catch (err) { alert('Gagal menghubungi server'); }
+}
+
+async function finishWork(jobId) {
+    if (!confirm('Apakah pengerjaan sudah benar-benar selesai?')) return;
+    try {
+        const response = await fetch(`/api/jobs/finish/${jobId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        if (result.success) { window.location.reload(); } else { alert(result.message); }
+    } catch (err) { alert('Kesalahan koneksi ke server'); }
+}
+</script>

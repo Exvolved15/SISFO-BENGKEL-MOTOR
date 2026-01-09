@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h1><%= title %></h1>
+        <p>Anda sedang mengedit data jasa servis: <strong><%= service.serviceName %></strong>.</p>
+        
+        <form action="/services/edit/<%= service._id %>" method="POST">
+            <div class="mb-3">
+                <label for="serviceName" class="form-label">Nama Jasa Servis</label>
+                <input type="text" class="form-control" id="serviceName" name="serviceName" value="<%= service.serviceName %>" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="serviceCode" class="form-label">Kode Jasa</label>
+                <input type="text" class="form-control" id="serviceCode" name="serviceCode" value="<%= service.serviceCode %>" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Harga Jasa (Rp)</label>
+                <input type="number" class="form-control" id="price" name="price" value="<%= service.price %>" required min="0">
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Deskripsi</label>
+                <textarea class="form-control" id="description" name="description" rows="3"><%= service.description || '' %></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-warning me-2">Simpan Perubahan</button>
+            <a href="/services" class="btn btn-secondary">Batal</a>
+        </form>
+    </div>
+</div>

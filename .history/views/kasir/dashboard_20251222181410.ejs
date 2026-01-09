@@ -1,0 +1,154 @@
+<div class="container-fluid px-4">
+    <h2 class="mt-4">Selamat Datang, <%= user.name %></h2>
+    <p class="text-muted small">Bagian: <%= user.department %></p>
+    <hr>
+
+    <div class="row mb-4 g-3">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow h-100 border-0">
+                <div class="card-body">
+                    <h5><i class="fas fa-plus-circle me-2"></i>Transaksi Baru</h5>
+                    <p class="small">Input servis pelanggan baru.</p>
+                    <a href="/transactions/add" class="btn btn-light btn-sm fw-bold text-primary">Buka Form</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow h-100 border-0">
+                <div class="card-body">
+                    <h5><i class="fas fa-file-invoice-dollar me-2"></i>Total Transaksi</h5>
+                    <h3><%= transactions ? transactions.length : 0 %></h3>
+                    <p class="mb-0 small">Transaksi tercatat hari ini.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white shadow h-100 border-0">
+                <div class="card-body">
+                    <h5><i class="fas fa-user-tools me-2"></i>Mekanik Sibuk</h5>
+                    <% if (typeof mechanics !== 'undefined' && mechanics.length > 0) { 
+                        let busy = mechanics.filter(m => m.status === 'kerja' || m.status === 'on_progress').length;
+                    %>
+                        <h3><%= busy %> / <%= mechanics.length %></h3>
+                    <% } else { %>
+                        <h3>0 / 0</h3>
+                    <% } %>
+                    <p class="mb-0 small">Mekanik sedang menangani unit.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+            <h6 class="mb-0"><i class="fas fa-history me-2"></i>Riwayat Transaksi Terakhir</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Pelanggan & Unit</th>
+                            <th>Status</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (transactions && transactions.length > 0) { %>
+                            <% transactions.forEach(trx => { %>
+                            <tr>
+                                <td><span class="badge bg-light text-dark border fw-bold"><%= trx.invoiceNumber %></span></td>
+                                <td>
+                                    <div class="fw-bold"><%= trx.customerName || (trx.customer ? trx.customer.name : 'Umum') %></div>
+                                    <small class="text-muted"><%= trx.motorName %> - <%= trx.vehicleLicense %></small>
+                                </td>
+                                <td>
+                                    <% let s = trx.status ? trx.status.toLowerCase() : 'proses'; %>
+                                    <% if (s === 'completed' || s === 'selesai' || s === 'lunas') { %>
+                                        <span class="badge bg-success"><i class="fas fa-check me-1"></i>Selesai</span>
+                                    <% } else { %>
+                                        <span class="badge bg-warning text-dark"><i class="fas fa-spinner fa-spin me-1"></i>Proses</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <% if (s !== 'completed' && s !== 'selesai' && s !== 'lunas') { %>
+                                            <button onclick="markAsDone('<%= trx._id %>')" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-check-circle"></i> Selesai
+                                            </button>
+                                        <% } %>
+                                        <a href="/api/transactions/print/<%= trx._id %>" target="_blank" class="btn btn-sm btn-dark">
+                                            <i class="fas fa-print"></i> Resi
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="4" class="text-center py-4 text-muted">Belum ada transaksi hari ini.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-secondary text-white py-3">
+            <h6 class="mb-0"><i class="fas fa-tools me-2"></i>Status & Beban Kerja Mekanik</h6>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <% if (typeof mechanics !== 'undefined' && mechanics.length > 0) { %>
+                    <% mechanics.forEach(mech => { %>
+                        <div class="col-md-4">
+                            <% 
+                                let borderClass = 'border-danger'; 
+                                if (mech.status === 'kerja' || mech.status === 'on_progress') borderClass = 'border-warning';
+                                if (mech.status === 'selesai' || mech.status === 'lunas') borderClass = 'border-success';
+                            %>
+                            <div class="card h-100 border-start border-4 <%= borderClass %> shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title mb-1 fw-bold"><%= mech.name %></h6>
+                                    <small class="text-muted d-block mb-2"><%= mech.department %></small>
+                                    <% if (mech.status === 'nganggur' || !mech.status || mech.status === 'Tidak Bekerja') { %>
+                                        <span class="badge bg-danger">Tersedia / Nganggur</span>
+                                    <% } else { %>
+                                        <span class="badge bg-warning text-dark">Sedang Mengerjakan Unit</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="col-12 text-center py-3">
+                        <p class="text-muted small italic">Mekanik belum tersedia atau belum login.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function markAsDone(id) {
+    if(!confirm('Tandai transaksi ini sebagai selesai dan lunas?')) return;
+
+    try {
+        const response = await fetch(`/api/transactions/update-status/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' } // FIX: Sebelumnya salah tulis 'activeJob'
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            window.location.reload(); 
+        } else {
+            alert('Gagal: ' + result.message);
+        }
+    } catch (err) {
+        alert('Kesalahan koneksi ke server.');
+    }
+}
+</script>

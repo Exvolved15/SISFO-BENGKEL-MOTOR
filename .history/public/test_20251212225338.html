@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form POST Test</title>
+</head>
+<body>
+    <h2>Tambah Suku Cadang (dengan Form HTML)</h2>
+    <form action="http://localhost:5000/api/parts" method="POST">
+        <label for="name">Nama:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="code">Kode:</label><br>
+        <input type="text" id="code" name="code" required><br><br>
+
+        <label for="stock">Stok:</label><br>
+        <input type="number" id="stock" name="stock" required><br><br>
+
+        <input type="submit" value="Kirim Data POST">
+    </form>
+</body>
+</html>

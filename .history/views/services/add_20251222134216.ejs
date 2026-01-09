@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h1><%= title %></h1>
+        <p>Isi detail jasa servis baru.</p>
+        
+        <form action="/api/services/add" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Nama Jasa</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Kode Jasa</label>
+                <input type="text" name="code" class="form-control" placeholder="SRV-XXX" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Biaya (Rp)</label>
+                <input type="number" name="price" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan Jasa</button>
+        </form>
+    </div>
+</div>

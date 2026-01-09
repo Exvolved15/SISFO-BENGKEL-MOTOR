@@ -1,0 +1,24 @@
+<h1><%= title %></h1>
+<p>Daftar layanan jasa servis yang tersedia.</p>
+
+<a href="/services/add" class="btn btn-success mb-3">Tambah Jasa Baru</a>
+
+<% if (services.length > 0) { %>
+    <tbody>
+        <% services.forEach(service => { %>
+            <tr>
+                <td><%= service.serviceCode %></td>
+                <td><%= service.serviceName %></td>
+                <td>Rp <%= service.price.toLocaleString('id-ID') %></td>
+                <td>
+                    <a href="/services/edit/<%= service._id %>" class="btn btn-sm btn-warning me-2">Edit</a>
+                    <form action="/services/delete/<%= service._id %>?_method=DELETE" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus jasa servis ini?');">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+        <% }); %>
+    </tbody>
+    
+    
+<% } else { %>

@@ -1,0 +1,220 @@
+<h1><%= title %></h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="transactionForm" action="/transactions/add" method="POST">
+            
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">Informasi Pelanggan</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customerName" class="form-label">Nama Pelanggan</label>
+                            <input type="text" class="form-control" id="customerName" name="customerName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="vehicleLicense" class="form-label">Plat Nomor Kendaraan</label>
+                            <input type="text" class="form-control" id="vehicleLicense" name="vehicleLicense" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">Detail Penjualan & Servis</div>
+                <div class="card-body">
+                    <table class="table table-bordered" id="itemTable">
+                        <thead>
+                            <tr>
+                                <th>Item (Suku Cadang/Jasa)</th>
+                                <th style="width: 15%;">Harga Satuan (Rp)</th>
+                                <th style="width: 10%;">Qty</th>
+                                <th style="width: 20%;">Subtotal (Rp)</th>
+                                <th style="width: 5%;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            </tbody>
+                    </table>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-sm btn-info text-white me-2" onclick="addItemRow('part')">Tambah Suku Cadang</button>
+                        <button type="button" class="btn btn-sm btn-info text-white" onclick="addItemRow('service')">Tambah Jasa Servis</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">Pembayaran</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="paymentMethod" class="form-label">Metode Pembayaran</label>
+                            <select class="form-select mb-3" id="paymentMethod" name="paymentMethod" required>
+                                <option value="Cash">Cash</option>
+                                <option value="Transfer">Transfer</option>
+                                <option value="Debit">Debit</option>
+                            </select>
+
+                            <label for="notes" class="form-label">Catatan</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <input type="hidden" id="totalAmountInput" name="totalAmount" value="0">
+                            <input type="hidden" id="grandTotalInput" name="grandTotal" value="0">
+                            <input type="hidden" id="itemDetailsInput" name="itemDetails"> 
+
+                            <h5 class="mt-2">Total Biaya (Bruto): <span id="totalAmountDisplay">Rp 0</span></h5>
+                            <div class="mb-3">
+                                <label for="discount" class="form-label">Diskon (Rp)</label>
+                                <input type="number" class="form-control text-end" id="discount" name="discount" value="0" min="0" oninput="calculateTotal()">
+                            </div>
+                            <h3>Total Akhir: <span id="grandTotalDisplay" class="text-success">Rp 0</span></h3>
+                            
+                            <button type="submit" class="btn btn-success btn-lg mt-3" id="submitButton" disabled>Proses Transaksi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Data Suku Cadang dan Jasa dari Server (EJS ke JS)
+    const PARTS = <%- JSON.stringify(parts) %>;
+    const SERVICES = <%- JSON.stringify(services) %>;
+    let TRANSACTION_ITEMS = [];
+
+    let rowCounter = 0;
+
+    function formatRupiah(number) {
+        return new Intl.NumberFormat('id-ID').format(number);
+    }
+
+    function calculateTotal() {
+        let totalAmount = 0;
+        TRANSACTION_ITEMS = [];
+
+        // Loop melalui setiap baris di tabel
+        const rows = document.querySelectorAll('#itemTable tbody tr');
+        rows.forEach(row => {
+            const itemType = row.dataset.itemType;
+            const itemId = row.dataset.itemId;
+            
+            const price = parseFloat(row.querySelector('[data-type="price"]').textContent.replace(/\./g, '').replace(',', '.'));
+            const quantityInput = row.querySelector('[data-type="qty"]');
+            const quantity = parseInt(quantityInput.value) || 0;
+            
+            if (quantity > 0 && price > 0) {
+                const subTotal = price * quantity;
+                totalAmount += subTotal;
+                row.querySelector('[data-type="subtotal"]').textContent = formatRupiah(subTotal);
+                
+                // Kumpulkan data untuk dikirim ke backend
+                TRANSACTION_ITEMS.push({
+                    itemType: itemType,
+                    itemId: itemId,
+                    quantity: quantity,
+                    pricePerUnit: price
+                });
+            } else {
+                 row.querySelector('[data-type="subtotal"]').textContent = 'Rp 0';
+            }
+        });
+
+        // Hitung Total Akhir
+        const discount = parseFloat(document.getElementById('discount').value) || 0;
+        const grandTotal = totalAmount - discount;
+
+        // Update tampilan
+        document.getElementById('totalAmountDisplay').textContent = formatRupiah(totalAmount);
+        document.getElementById('grandTotalDisplay').textContent = formatRupiah(grandTotal);
+
+        // Update field tersembunyi untuk POST
+        document.getElementById('totalAmountInput').value = totalAmount;
+        document.getElementById('grandTotalInput').value = grandTotal;
+        document.getElementById('itemDetailsInput').value = JSON.stringify(TRANSACTION_ITEMS);
+        
+        // Aktifkan tombol submit
+        document.getElementById('submitButton').disabled = grandTotal <= 0 || TRANSACTION_ITEMS.length === 0;
+    }
+
+    function addItemRow(type) {
+        rowCounter++;
+        const tableBody = document.querySelector('#itemTable tbody');
+        const newRow = tableBody.insertRow();
+        newRow.setAttribute('data-item-type', type);
+        newRow.id = 'row-' + rowCounter;
+
+        let itemOptions = '';
+        let initialPrice = 0;
+
+        if (type === 'part') {
+            itemOptions = PARTS.map(p => 
+                `<option value="${p._id}" data-price="${p.sellingPrice}" data-stock="${p.stock}">
+                    [${p.code}] ${p.name} (Stok: ${p.stock})
+                </option>`
+            ).join('');
+            initialPrice = PARTS.length > 0 ? PARTS[0].sellingPrice : 0;
+        } else if (type === 'service') {
+            itemOptions = SERVICES.map(s => 
+                `<option value="${s._id}" data-price="${s.price}">
+                    [${s.serviceCode}] ${s.serviceName}
+                </option>`
+            ).join('');
+            initialPrice = SERVICES.length > 0 ? SERVICES[0].price : 0;
+        }
+
+        newRow.innerHTML = `
+            <td>
+                <select class="form-select item-selector" onchange="updateRow('${newRow.id}', this)" required>
+                    <option value="">-- Pilih ${type === 'part' ? 'Suku Cadang' : 'Jasa Servis'} --</option>
+                    ${itemOptions}
+                </select>
+            </td>
+            <td data-type="price">${formatRupiah(initialPrice)}</td>
+            <td><input type="number" value="1" min="1" class="form-control form-control-sm" data-type="qty" oninput="calculateTotal()" required></td>
+            <td data-type="subtotal">Rp 0</td>
+            <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow('${newRow.id}')">X</button></td>
+        `;
+
+        // Update data-itemId di baris berdasarkan pilihan pertama
+        if (type === 'part' && PARTS.length > 0) {
+             newRow.setAttribute('data-item-id', PARTS[0]._id);
+        } else if (type === 'service' && SERVICES.length > 0) {
+             newRow.setAttribute('data-item-id', SERVICES[0]._id);
+        }
+
+        calculateTotal(); // Recalculate setelah menambah baris
+    }
+
+    function updateRow(rowId, selectElement) {
+        const row = document.getElementById(rowId);
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        
+        if (selectedOption.value) {
+            const price = parseFloat(selectedOption.dataset.price) || 0;
+            const itemId = selectedOption.value;
+            const stock = selectedOption.dataset.stock; // Hanya ada untuk part
+
+            row.setAttribute('data-item-id', itemId);
+            row.querySelector('[data-type="price"]').textContent = formatRupiah(price);
+            
+            // Tambahkan validasi stok untuk Suku Cadang
+            if (row.dataset.itemType === 'part' && stock) {
+                const qtyInput = row.querySelector('[data-type="qty"]');
+                qtyInput.setAttribute('max', stock);
+                qtyInput.value = Math.min(qtyInput.value || 1, stock);
+            }
+        }
+        calculateTotal();
+    }
+    
+    function removeRow(rowId) {
+        document.getElementById(rowId).remove();
+        calculateTotal();
+    }
+
+    // Panggil perhitungan saat halaman dimuat
+    window.onload = calculateTotal;
+</script>

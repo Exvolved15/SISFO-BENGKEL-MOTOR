@@ -1,0 +1,108 @@
+<div class="container py-4">
+    <div class="mb-3">
+        <a href="/api/users" class="btn btn-secondary btn-sm">← Kembali ke Daftar Pengguna</a>
+    </div>
+
+    <% 
+        // 1. Inisialisasi variabel di paling atas blok konten
+        let activeJob = null; 
+        if (typeof historyJobs !== 'undefined' && Array.isArray(historyJobs)) {
+            // Mencari pekerjaan yang statusnya sedang dikerjakan
+            activeJob = historyJobs.find(j => j.status === 'on_progress');
+        }
+    %>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Status Pekerjaan Saat Ini</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-7 border-end">
+                    <h5 class="border-bottom pb-2 mb-3 text-primary">Informasi Pengerjaan</h5>
+                    
+                    <% if (activeJob) { %>
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted">Nomor Invoice</div>
+                            <div class="col-7 fw-bold">: <%= activeJob.invoiceNumber %></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted">Tanggal Mulai</div>
+                            <div class="col-7">: <%= new Date(activeJob.createdAt).toLocaleString('id-ID') %></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted">Pelanggan</div>
+                            <div class="col-7 fw-bold">: <%= activeJob.customer?.name || 'Umum' %></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted">Tipe Motor</div>
+                            <div class="col-7">: <%= activeJob.motorName || '-' %></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted">Nomor Polisi</div>
+                            <div class="col-7 fw-bold">: <%= activeJob.vehicleLicense %></div>
+                        </div>
+                        <div class="mt-3">
+                            <span class="text-muted small">Deskripsi Kerusakan/Servis:</span>
+                            <div class="bg-light p-2 rounded mt-1 border small">
+                                <%= activeJob.description || 'Tidak ada deskripsi' %>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button onclick="finishWork('<%= activeJob._id %>')" class="btn btn-success w-100 py-2 shadow-sm">
+                                <i class="fas fa-check-circle me-1"></i> SELESAIKAN PEKERJAAN
+                            </button>
+                        </div>
+
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <i class="fas fa-user-clock fa-3x text-light mb-3"></i>
+                            <p class="text-muted">Anda tidak memiliki pekerjaan aktif saat ini.</p>
+                            <p class="small">Silakan ambil pekerjaan baru dari daftar antrean.</p>
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="col-md-5 ps-md-4">
+                    <h5 class="border-bottom pb-2 mb-3 text-primary">Profil Mekanik</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="fas fa-user-cog fa-lg"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="mb-0 fw-bold"><%= user.name %></h6>
+                            <small class="text-muted"><%= user.department || 'Bagian Servis' %></small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="small">
+                        <p class="mb-1 text-muted">Status Kehadiran:</p>
+                        <span class="badge bg-success">Online & Aktif</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function finishWork(jobId) {
+    if (!confirm('Apakah pekerjaan ini sudah benar-benar selesai?')) return;
+    try {
+        const response = await fetch(`/api/jobs/finish/${jobId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        if (result.success) {
+            alert('Pekerjaan diselesaikan!');
+            window.location.reload();
+        } else {
+            alert('Gagal: ' + result.message);
+        }
+    } catch (err) {
+        alert('Kesalahan koneksi ke server');
+    }
+}
+</script>

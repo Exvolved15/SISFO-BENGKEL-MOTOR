@@ -1,0 +1,51 @@
+<h1><%= title %></h1>
+<p>Daftar riwayat penjualan suku cadang dan jasa servis.</p>
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Riwayat Transaksi</h1>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <div><i class="fas fa-table me-1"></i> Daftar Transaksi</div>
+            <% if (user.role === 'kasir') { %>
+                <a href="/transactions/add" class="btn btn-primary btn-sm">Buat Transaksi</a>
+            <% } %>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Invoice</th>
+                        <th>Pelanggan</th>
+                        <th>Total</th>
+                        <th>Metode</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (transactions && transactions.length > 0) { %>
+                        <% transactions.forEach(function(trx) { %>
+                            <tr>
+                                <td><%= trx.invoiceNumber %></td>
+                                <td><%= trx.customerName %></td>
+                                <td>Rp <%= (trx.grandTotal || 0).toLocaleString('id-ID') %></td>
+                                <td><%= trx.paymentMethod %></td>
+                                <td>
+                                    <a href="/transactions/<%= trx._id %>" class="btn btn-info btn-sm text-white">Detail</a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="5" class="text-center py-4">Belum ada data transaksi.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<% } else { %>
+    <div class="alert alert-warning" role="alert">
+        Belum ada riwayat transaksi yang tersimpan.
+    </div>
+<% } %>

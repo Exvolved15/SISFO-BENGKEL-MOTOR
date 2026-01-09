@@ -1,0 +1,251 @@
+<% 
+    // 1. INISIALISASI DATA BERDASARKAN ID MEKANIK LOGIN
+    let activeJob = null;
+    let pendingJobs = [];
+    let completedJobs = [];
+    
+    if (typeof historyJobs !== 'undefined' && Array.isArray(historyJobs)) {
+        activeJob = historyJobs.find(j => j.status === 'on_progress');
+        pendingJobs = historyJobs.filter(j => j.status === 'pending');
+        completedJobs = historyJobs.filter(j => j.status === 'completed');
+    }
+%>
+
+<div class="container-fluid px-4 py-4 animate-fade-in">
+    <div class="card border-0 shadow-sm mb-4 overflow-hidden rounded-4">
+        <div class="card-body p-0">
+            <div class="row g-0">
+                <div class="col-md-8 p-4 d-flex align-items-center bg-white">
+                    <div class="profile-avatar-container rounded-circle bg-warning d-flex align-items-center justify-content-center text-dark shadow-sm overflow-hidden border border-4 border-light" 
+                         style="width: 90px; height: 90px; min-width: 90px;">
+                        <% if (user.profileImage) { %>
+                            <img src="<%= user.profileImage %>?t=<%= Date.now() %>" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                        <% } else { %>
+                            <span style="font-size: 2.5rem; font-weight: bold;"><%= user.name.charAt(0).toUpperCase() %></span>
+                        <% } %>
+                    </div>
+                    <div class="ms-4">
+                        <h3 class="mb-1 fw-bold text-dark"><%= user.name %></h3>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-dark text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill small">MEKANIK</span>
+                            <% if (activeJob) { %>
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill pulse">SEDANG KERJA</span>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 bg-light p-4 d-flex align-items-center border-start border-opacity-10">
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small text-muted fw-bold text-uppercase">Target Hari Ini</span>
+                            <span class="small fw-bold text-success"><%= completedJobs.length %> / 5 Unit</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 10px; border-radius: 10px;">
+                            <div class="progress-bar bg-warning" style="width: <%= Math.min((completedJobs.length/5)*100, 100) %>%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-screwdriver-wrench me-2 text-warning"></i>Tugas Berjalan</h5>
+                </div>
+                <div class="card-body p-4">
+                    <% if (activeJob) { %>
+                        <div class="row mb-4">
+                            <div class="col-md-7">
+                                <h4 class="fw-bold text-primary mb-1"><%= activeJob.invoiceNumber %></h4>
+                                <h5 class="text-dark fw-bold"><%= activeJob.motorName %></h5>
+                                <span class="badge bg-dark font-monospace px-3 py-2"><%= activeJob.vehicleLicense %></span>
+                            </div>
+                            <div class="col-md-5 text-md-end">
+                                <small class="text-muted d-block fw-bold small">CUSTOMER</small>
+                                <span class="fw-bold text-dark fs-5"><%= activeJob.customer?.name || 'Umum' %></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="text-muted small fw-bold mb-2 text-uppercase">Daftar Pengerjaan:</label>
+                            <div class="p-3 bg-light rounded-4 border-start border-4 border-warning">
+                                <p class="mb-0 small fw-bold"><%= activeJob.description || 'Pengecekan Rutin' %></p>
+                            </div>
+                        </div>
+
+                        <button onclick="updateJobStatus('<%= activeJob._id %>', 'completed')" class="btn btn-success btn-lg w-100 shadow-sm fw-bold py-3 rounded-4 hover-elevate">
+                            <i class="fas fa-check-double me-2"></i> SELESAIKAN PEKERJAAN
+                        </button>
+                    <% } else { %>
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-mug-hot fa-4x mb-3 opacity-25"></i>
+                            <p>Tidak ada pekerjaan aktif. Ambil dari antrean di bawah.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-secondary text-white py-3">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-pause-circle me-2"></i>Antrean Servis (Pending)</h6>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr class="small text-uppercase fw-bold text-muted">
+                                <th class="ps-4">No. Invoice</th>
+                                <th>Unit Kendaraan</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% pendingJobs.forEach(job => { %>
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary"><%= job.invoiceNumber %></td>
+                                    <td>
+                                        <div class="fw-bold"><%= job.motorName %></div>
+                                        <small class="badge bg-light text-muted border px-2"><%= job.vehicleLicense %></small>
+                                    </td>
+                                    <td class="text-center pe-4">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <button type="button" class="btn btn-sm btn-info text-white rounded-pill px-3 shadow-sm fw-bold" 
+                                                onclick="showJobDetail('<%= job.invoiceNumber %>', '<%= job.motorName %>', '<%= job.description %>')">
+                                                <i class="fas fa-eye me-1 small"></i> DETAIL
+                                            </button>
+                                            <button onclick="updateJobStatus('<%= job._id %>', 'on_progress')" 
+                                                class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm fw-bold <%= activeJob ? 'disabled opacity-50' : '' %>">
+                                                AMBIL
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                            <% if (pendingJobs.length === 0) { %>
+                                <tr><td colspan="3" class="text-center py-4 text-muted small">Tidak ada antrean pengerjaan.</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-top" style="top: 20px;">
+                <div class="card-header bg-emerald-gradient text-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="fas fa-history me-2"></i>Log Selesai Hari Ini</h6>
+                    <span class="badge bg-white text-success rounded-pill small"><%= completedJobs.length %> Unit</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <% if (completedJobs.length > 0) { %>
+                            <% completedJobs.forEach(job => { %>
+                                <div class="list-group-item p-3 border-bottom hover-light transition-all">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <span class="fw-bold small text-success">#<%= job.invoiceNumber %></span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <button class="btn btn-link btn-sm p-0 text-info shadow-none" 
+                                                onclick="showJobDetail('<%= job.invoiceNumber %>', '<%= job.motorName %>', '<%= job.description %>')"
+                                                title="Lihat Rincian">
+                                                <i class="fas fa-info-circle"></i>
+                                            </button>
+                                            <span class="badge bg-light text-muted fw-normal" style="font-size: 0.65rem;">
+                                                <i class="fas fa-clock me-1"></i><%= new Date(job.updatedAt).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="fw-bold text-dark small"><%= job.motorName %></div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted font-monospace" style="font-size: 0.7rem;"><%= job.vehicleLicense %></small>
+                                        <span class="badge bg-success-soft text-success border-0 px-2 py-1" style="font-size: 0.6rem;">DONE</span>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="p-5 text-center text-muted">
+                                <i class="fas fa-clipboard-check fa-2x mb-2 opacity-10"></i>
+                                <p class="small mb-0">Belum ada unit selesai.</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="card-footer bg-light border-0 py-2 text-center">
+                    <small class="text-muted" style="font-size: 0.7rem;">Data riwayat harian mekanik</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header bg-dark text-white rounded-top-4 border-0">
+                <h5 class="modal-title fw-bold" id="modalInv">Detail Pekerjaan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <small class="text-muted d-block fw-bold mb-1 text-uppercase">Unit Kendaraan:</small>
+                    <h5 id="modalMotor" class="fw-bold text-primary mb-0"></h5>
+                </div>
+                <div class="p-3 bg-light rounded-4 border-start border-4 border-info shadow-inner">
+                    <small class="text-muted d-block fw-bold mb-2 text-uppercase">Rincian Service & Parts:</small>
+                    <div id="modalDesc" class="small text-dark fw-bold">
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light rounded-bottom-4">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-emerald-gradient { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .bg-info-soft { background-color: rgba(13, 202, 240, 0.1); }
+    .shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05); }
+    .pulse { animation: pulse-animation 2s infinite; }
+    @keyframes pulse-animation { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<script>
+// Fungsi untuk memunculkan Modal Detail
+function showJobDetail(inv, motor, desc) {
+    document.getElementById('modalInv').innerText = 'Faktur: ' + inv;
+    document.getElementById('modalMotor').innerText = motor;
+    
+    // Pecah deskripsi (Koma menjadi baris baru) untuk tampilan lebih rapi
+    const formattedDesc = desc ? desc.split(', ').join('<br>• ') : 'Tidak ada rincian.';
+    document.getElementById('modalDesc').innerHTML = '• ' + formattedDesc;
+    
+    const myModal = new bootstrap.Modal(document.getElementById('detailModal'));
+    myModal.show();
+}
+
+async function updateJobStatus(jobId, status) {
+    const actionText = status === 'completed' ? 'Selesaikan unit ini?' : 'Ambil unit ini?';
+    if (!confirm(actionText)) return;
+    try {
+        const response = await fetch(`/api/jobs/update-status/${jobId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: status })
+        });
+        const result = await response.json();
+        if (result.success) {
+            window.location.reload();
+        } else {
+            alert('Gagal: ' + result.message);
+        }
+    } catch (err) {
+        alert('Kesalahan jaringan: Periksa koneksi server.');
+    }
+}
+</script>

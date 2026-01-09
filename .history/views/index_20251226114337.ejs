@@ -1,0 +1,347 @@
+<section class="hero-section py-5 mb-5 animate-fade-in" style="background: linear-gradient(135deg, rgba(26, 42, 108, 0.85), rgba(46, 204, 113, 0.7)), url('https://lh3.googleusercontent.com/gps-proxy/ALd4DhGQLRltPueb7y1aUgsrby8q_7lBwflV9EwlCwvGSbxh6Cpr9AB2EGyZ_vci_ydICPwJNdZF8cVCmS20moH2ot7y0tX224IbUJD8BxoiIx26DUd5VyIbjU3bcqqpN28PAHukM3yERtwV5iTQ_Yfowix04CB4ioRT7v-s25DvWtV6oN7zbyF77F7d22NOLLZJcCHFCeU=w408-h306-k-no'); background-size: cover; background-position: center; background-attachment: fixed;">
+    <div class="container py-lg-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7 text-white text-lg-start text-center" data-aos="fade-right">
+                <h1 class="display-3 fw-bold mb-3">
+                    <i class="fas fa-screwdriver-wrench me-2 text-success"></i>Solusi Digital <br>
+                    <span class="brand-border">ACR Motor</span>
+                </h1>
+                <p class="lead opacity-75 mb-4">Manajemen bengkel modern dengan transparansi data dan monitoring mekanik secara real-time untuk kenyamanan Anda.</p>
+                <div class="d-flex flex-wrap gap-3 justify-content-lg-start justify-content-center">
+                    <a href="/login" class="btn btn-outline-light px-4 py-3 fw-bold rounded-3 shadow">
+                        <i class="fas fa-user-shield me-2"></i>LOGIN SISTEM
+                    </a>
+                    <a href="/about" class="btn btn-outline-light px-4 py-3 fw-bold rounded-3 shadow">
+                        <i class="fas fa-map-location-dot me-2"></i>LOKASI KAMI
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="card search-card border-0 shadow-lg bg-glass overflow-hidden">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <div class="icon-box bg-success bg-opacity-10 text-success mx-auto mb-3 shadow-sm">
+                                <i class="fas fa-magnifying-glass fa-2x"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark">Lacak Servis</h4>
+                            <p class="text-muted small">Pantau progres motor Anda secara real-time</p>
+                        </div>
+                        
+                       <form action="/track-status" method="GET">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">No. Invoice atau No. Plat</label>
+                            <div class="input-group shadow-sm rounded-3 overflow-hidden border">
+                                <span class="input-group-text bg-white border-0">
+                                    <i class="fas fa-receipt text-success"></i>
+                                </span>
+                                <input type="text" name="invoice" class="form-control border-0 py-3" 
+                                    placeholder="Contoh: INV-2025... atau B 1234 ABC" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 py-3 fw-bold rounded-3 shadow-sm btn-emerald">
+                            <i class="fas fa-search-location me-2"></i>CEK STATUS SEKARANG
+                        </button>
+                    </form>
+
+                        <% if (locals.error) { %>
+                            <div class="alert alert-danger mt-3 small py-2 text-center" role="alert">
+                                <i class="fas fa-circle-exclamation me-2"></i><%= error %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row g-4 mb-5 text-center" data-aos="fade-up">
+        <div class="col-md-4">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100 card-hover">
+                <i class="fas fa-clipboard-check fa-2x text-success mb-3"></i>
+                <h2 class="fw-bold text-success mb-0">1,200+</h2>
+                <p class="text-muted mb-0">Servis Sukses</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100 card-hover">
+                <i class="fas fa-user-gear fa-2x text-success mb-3"></i>
+                <h2 class="fw-bold text-success mb-0">15+</h2>
+                <p class="text-muted mb-0">Mekanik Ahli</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 bg-white rounded-4 shadow-sm h-100 card-hover">
+                <i class="fas fa-face-smile-beam fa-2x text-success mb-3"></i>
+                <h2 class="fw-bold text-success mb-0">4.9/5</h2>
+                <p class="text-muted mb-0">Rating Pelanggan</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="py-5 mb-5 rounded-4 shadow-sm" style="background: #1a202c; border: 1px solid #2d3748;">
+        <div class="text-center mb-5" data-aos="fade-down">
+            <h2 class="fw-bold text-light"><i class="fas fa-certificate text-warning me-2"></i>Layanan Unggulan Kami</h2>
+            <div class="border-bottom border-success border-3 mx-auto mt-2" style="width: 60px;"></div>
+        </div>
+        <div class="row g-4 px-4">
+            <div class="col-md-4 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 p-4 card-hover text-center bg-white">
+                    <div class="mb-3 text-warning"><i class="fas fa-screwdriver-wrench fa-3x"></i></div>
+                    <h5 class="fw-bold">Servis Berkala</h5>
+                    <p class="text-muted small">Perawatan rutin mesin dengan standar operasional yang ketat.</p>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 p-4 card-hover text-center bg-white">
+                    <div class="mb-3 text-danger"><i class="fas fa-oil-can fa-3x"></i></div>
+                    <h5 class="fw-bold">Ganti Oli & Part</h5>
+                    <p class="text-muted small">Penyediaan suku cadang original dan oli berkualitas tinggi.</p>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 p-4 card-hover text-center bg-white">
+                    <div class="mb-3 text-info"><i class="fas fa-laptop-medical fa-3x"></i></div>
+                    <h5 class="fw-bold">Diagnosis Sistem</h5>
+                    <p class="text-muted small">Pengecekan sistem kelistrikan menggunakan alat scanner modern.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6">
+                <div class="card border-0 shadow-sm h-100 p-4 card-hover text-center bg-white">
+                    <div class="mb-3 text-success"><i class="fas fa-file-invoice-dollar fa-3x"></i></div>
+                    <h5 class="fw-bold">Lacak Resi Otomatis</h5>
+                    <p class="text-muted small">Cetak invoice digital dan simpan riwayat pembayaran secara otomatis.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6">
+                <div class="card border-0 shadow-sm h-100 p-4 card-hover text-center bg-white">
+                    <div class="mb-3 text-primary"><i class="fas fa-spinner fa-3x fa-spin"></i></div>
+                    <h5 class="fw-bold">Tracking Progress Servis</h5>
+                    <p class="text-muted small">Pantau status pengerjaan motor Anda detik demi detik via website.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<section class="py-5 mb-5 rounded-4 shadow-sm" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+    <div class="text-center mb-5" data-aos="fade-down">
+        <h2 class="fw-bold text-dark">
+            <i class="fas fa-users-cog text-success me-2"></i>Struktur Organisasi Tim Pro
+        </h2>
+        <p class="text-muted small">Otoritas Manajemen & Staff Operasional ACR Motor</p>
+        <div class="border-bottom border-success border-3 mx-auto mt-2" style="width: 60px;"></div>
+    </div>
+    
+    <div class="container px-4">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6 col-lg-5" data-aos="zoom-in">
+                <div class="card border-0 shadow rounded-4 text-center p-4 card-hover bg-white border-top border-5 border-danger">
+                    <div class="mx-auto mb-3">
+                        <div class="profile-img-wrapper rounded-circle p-1 border border-3 border-danger shadow-sm" style="width: 120px; height: 120px; overflow: hidden; margin: 0 auto;">
+                            <img src="/img/3x4(1).jpg" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;" alt="Owner">
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-1 text-dark">Muhammad Fadhil Qaulan</h3>
+                    <span class="badge bg-danger text-white text-uppercase py-2 px-4 rounded-pill mb-3 shadow-sm" style="font-size: 0.8rem; letter-spacing: 1px;">Ketua / Owner</span>
+                    <p class="text-dark italic px-3 mb-0 fw-medium" style="font-size: 1rem; line-height: 1.5;">
+                        "Pemegang visi utama dalam transformasi digital layanan bengkel ACR Motor untuk kemudahan pelanggan."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="w-50 mx-auto my-5 opacity-25">
+
+        <div class="row g-4 justify-content-center mb-5">
+            <div class="col-md-5" data-aos="zoom-in">
+                <div class="card border-0 shadow-sm rounded-4 text-center p-4 card-hover bg-white border-top border-5 border-primary">
+                    <div class="mx-auto mb-3">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center text-primary shadow-sm fw-bold" style="width: 90px; height: 90px; font-size: 2.5rem;">
+                            I
+                        </div>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-dark">Indah Ramadhani</h4>
+                    <span class="badge bg-primary text-white text-uppercase py-1 px-3 rounded-pill mb-3" style="font-size: 0.75rem;">Sekretaris</span>
+                    <p class="text-muted small italic mb-0" style="font-size: 0.85rem;">"Penanggung jawab administrasi, dokumentasi sistem, dan manajemen database pelanggan."</p>
+                </div>
+            </div>
+
+            <div class="col-md-5" data-aos="zoom-in">
+                <div class="card border-0 shadow-sm rounded-4 text-center p-4 card-hover bg-white border-top border-5 border-success">
+                    <div class="mx-auto mb-3">
+                        <div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center text-success shadow-sm fw-bold" style="width: 90px; height: 90px; font-size: 2.5rem;">
+                            D
+                        </div>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-dark">Dada Syahputra</h4>
+                    <span class="badge bg-success text-white text-uppercase py-1 px-3 rounded-pill mb-3" style="font-size: 0.75rem;">Bendahara</span>
+                    <p class="text-muted small italic mb-0" style="font-size: 0.85rem;">"Mengelola sirkulasi keuangan, pengadaan suku cadang, dan pelaporan laba rugi bengkel."</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="w-100 mx-auto my-5">
+
+        <div class="text-center mb-4"><small class="fw-bold text-muted tracking-widest text-uppercase" style="letter-spacing: 2px;">Technical & Support Staff</small></div>
+
+        <div class="row g-4 px-2 justify-content-center">
+            <% if (locals.staffList && staffList.length > 0) { %>
+                <% 
+                   const syncStaff = staffList.filter(m => 
+                        !m.name.toLowerCase().includes('fadhil') && 
+                        !m.name.toLowerCase().includes('indah') && 
+                        !m.name.toLowerCase().includes('dada')
+                   );
+                   syncStaff.forEach(member => { 
+                %>
+                    <div class="col-6 col-md-4 col-lg-3" data-aos="zoom-in">
+                        <div class="card border-0 shadow-sm rounded-4 text-center p-3 card-hover bg-white h-100">
+                            <div class="position-relative d-inline-block mx-auto mb-3">
+                                <div class="profile-img-wrapper rounded-circle p-1 border border-2 <%= member.status === 'kerja' ? 'border-danger' : 'border-success' %>">
+                                    <% if (member.profileImage && member.profileImage !== '/img/default-avatar.png') { %>
+                                        <img src="<%= member.profileImage %>" class="rounded-circle shadow-sm" style="width: 70px; height: 70px; object-fit: cover;" alt="<%= member.name %>">
+                                    <% } else { %>
+                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-dark shadow-sm fw-bold" style="width: 70px; height: 70px; font-size: 1.5rem;">
+                                            <%= member.name.charAt(0).toUpperCase() %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <span class="position-absolute bottom-0 end-0 p-2 border border-2 border-white rounded-circle <%= member.status === 'kerja' ? 'bg-danger' : 'bg-success' %>"></span>
+                            </div>
+                            <h6 class="fw-bold mb-1 text-dark text-truncate px-2" style="font-size: 0.9rem;"><%= member.name %></h6>
+                            <span class="badge bg-success-soft text-success text-uppercase py-1 px-2 rounded-pill mb-2" style="font-size: 0.6rem;">
+                                <%= member.role.toUpperCase() %>
+                            </span>
+                            <p class="text-muted mb-3 px-2" style="font-size: 0.7rem;">"<%= member.bio || 'Melayani sepenuh hati.' %>"</p>
+                            <div class="mt-auto pt-2 border-top">
+                                <span class="fw-bold" style="font-size: 0.65rem; color: <%= member.status === 'kerja' ? '#dc3545' : '#198754' %>">
+                                    <%= member.status === 'kerja' ? 'SEDANG TUGAS' : 'SIAP MELAYANI' %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+    </div>
+</section>
+    <section class="py-5 mb-5 rounded-4 text-white shadow-lg" style="background: linear-gradient(45deg, #1a202c, #2d3748);">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold"><i class="fas fa-comments text-warning me-2"></i>Pengalaman Pelanggan</h2>
+        </div>
+        <div class="row g-4 px-4">
+            <div class="col-md-4">
+                <div class="card border-0 bg-white shadow-sm p-4 card-hover text-dark h-100">
+                    <i class="fas fa-quote-left text-success opacity-25 fa-2x mb-3"></i>
+                    <p class="text-muted italic small">"Sangat puas! Saya bisa pantau status motor saya lewat dashboard. Transparan banget!"</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fas fa-user"></i></div>
+                        <div class="ms-3">
+                            <h6 class="mb-0 fw-bold">Budi Santoso</h6>
+                            <small class="text-muted">Yamaha NMAX</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 bg-white shadow-sm p-4 card-hover text-dark h-100">
+                    <i class="fas fa-quote-left text-success opacity-25 fa-2x mb-3"></i>
+                    <p class="text-muted italic small">"Harga sparepart jelas dan bisa langsung dicetak struknya. Mekaniknya ramah."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fas fa-user"></i></div>
+                        <div class="ms-3">
+                            <h6 class="mb-0 fw-bold">Siti Aminah</h6>
+                            <small class="text-muted">Honda Beat</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 bg-white shadow-sm p-4 card-hover text-dark h-100">
+                    <i class="fas fa-quote-left text-success opacity-25 fa-2x mb-3"></i>
+                    <p class="text-muted italic small">"Aplikasi sistem informasinya keren! Enggak perlu tanya-tanya terus motor sudah selesai."</p>
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;"><i class="fas fa-user"></i></div>
+                        <div class="ms-3">
+                            <h6 class="mb-0 fw-bold">Rian Wijaya</h6>
+                            <small class="text-muted">Kawasaki Ninja</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 mb-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="fw-bold text-dark"><i class="fas fa-map-location-dot text-success me-2"></i>Kunjungi Bengkel Kami</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4 mb-4 card-hover bg-glass d-flex flex-column justify-content-center" style="height: 220px;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-circle bg-success text-white me-3 shadow-sm"><i class="fas fa-location-dot"></i></div>
+                        <h5 class="fw-bold mb-0 text-dark">Alamat Utama</h5>
+                    </div>
+                    <p class="text-muted small mb-4">Jl. Abdullah Daeng Sirua No.170a, Panakkukang, Makassar.</p>
+                    <a href="https://maps.google.com" target="_blank" class="btn btn-success w-100 py-2 rounded-3 btn-emerald shadow-sm">
+                        <i class="fas fa-directions me-2"></i>Petunjuk Arah
+                    </a>
+                </div>
+                <div class="card border-0 shadow-sm p-4 card-hover bg-glass d-flex flex-column justify-content-center" style="height: 220px;">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-circle bg-primary text-white me-3 shadow-sm"><i class="fas fa-clock"></i></div>
+                        <h5 class="fw-bold mb-0 text-dark">Jam Operasional</h5>
+                    </div>
+                    <div class="small">
+                        <div class="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
+                            <span>Senin - Sabtu</span>
+                            <span class="fw-bold text-dark">07:30 - 18:00</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-danger fw-bold">
+                            <span>Minggu</span>
+                            <span>Tutup</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8" data-aos="zoom-in">
+                <div class="card border-0 shadow-sm overflow-hidden h-100 rounded-4 shadow-lg">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15894.46954203534!2d119.444983!3d-5.147321!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwMDgnNTAuNCJTIDExOcKwMjYnNDEuOSJF!5e0!3m2!1sid!2sid!4v1700000000000" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(26, 42, 108, 0.95), rgba(46, 204, 113, 0.7)), 
+                    url('https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?auto=format&fit=crop&q=80');
+        background-size: cover; background-position: center; background-attachment: fixed;
+    }
+    .icon-box { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .icon-circle { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .bg-glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    .bg-success-soft { background-color: rgba(46, 204, 113, 0.1); }
+    .btn-emerald { background-color: #2ecc71; border: none; transition: 0.3s ease; color: white; }
+    .btn-emerald:hover { background-color: #27ae60; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3) !important; color: white; }
+    .card-hover { 
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); 
+        border: 1px solid rgba(0,0,0,0.02) !important;
+    }
+    .card-hover:hover { 
+        transform: translateY(-8px); 
+        box-shadow: 0 15px 30px rgba(46, 204, 113, 0.15) !important;
+        border: 1px solid rgba(46, 204, 113, 0.2) !important;
+    }
+    .profile-img-wrapper {
+        transition: all 0.3s ease;
+    }
+    .card-hover:hover .profile-img-wrapper {
+        padding: 4px;
+    }
+    .brand-border { color: #2ecc71; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); font-weight: 800; }
+</style>

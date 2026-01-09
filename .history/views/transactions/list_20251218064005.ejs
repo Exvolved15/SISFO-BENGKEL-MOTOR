@@ -1,0 +1,46 @@
+<h1><%= title %></h1>
+<p>Daftar riwayat penjualan suku cadang dan jasa servis.</p>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1><%= title %></h1>
+        <a href="/transactions/add" class="btn btn-primary">Buat Transaksi Baru</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>No. Invoice</th>
+                        <th>Pelanggan</th>
+                        <th>Total</th>
+                        <th>Tanggal</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% transactions.forEach(trx => { %>
+                    <tr>
+                        <td><strong><%= trx.invoiceNumber %></strong></td>
+                        <td><%= trx.customerName %> (<%= trx.vehicleLicense %>)</td>
+                        <td>Rp <%= trx.totalAmount.toLocaleString('id-ID') %></td>
+                        <td><%= new Date(trx.createdAt).toLocaleDateString('id-ID') %></td>
+                        <td class="text-center">
+                            <a href="/transactions/<%= trx._id %>" class="btn btn-sm btn-info text-white">Detail</a>
+                            <a href="/transactions/print/<%= trx._id %>" target="_blank" class="btn btn-sm btn-dark">
+                                <i class="bi bi-printer"></i> Cetak Resi
+                            </a>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<% } else { %>
+    <div class="alert alert-warning" role="alert">
+        Belum ada riwayat transaksi yang tersimpan.
+    </div>
+<% } %>

@@ -1,0 +1,162 @@
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Dashboard Mekanik</h1>
+    <p class="text-muted">Halo, <%= user.name %>! Selamat bekerja.</p>
+
+    <div class="row g-4">
+        <div class="col-xl-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0"><i class="fas fa-clipboard-list me-2"></i>Antrean Servis Baru</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Pelanggan</th>
+                                    <th>Kendaraan</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (pendingJobs.length > 0) { %>
+                                    <% pendingJobs.forEach(job => { %>
+                                        <tr>
+                                            <td><span class="badge bg-light text-dark border"><%= job.invoiceNumber %></span></td>
+                                            <td><%= job.customer?.name || 'Umum' %></td>
+                                            <td><strong><%= job.vehicleLicense %></strong></td>
+                                            <td class="text-center">
+                                                <form action="/api/jobs/take-job/<%= job._id %>" method="POST">
+                                                    <button type="submit" class="btn btn-primary btn-sm px-3 shadow-sm">
+                                                        <i class="fas fa-tools me-1"></i> Kerjakan
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted italic">Tidak ada antrean servis baru.</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-5">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="card-title mb-0"><i class="fas fa-spinner fa-spin me-2"></i>Sedang Saya Kerjakan</h5>
+                </div>
+                <div class="card-body">
+                    <% 
+                        // Filter job yang statusnya on_progress dan milik mekanik ini
+                        const activeJob = historyJobs.find(j => j.status === 'on_progress' && j.mechanicId?._id.toString() === user._id.toString());
+                    %>
+
+                    <% if (activeJob) { %>
+                        <div class="bg-light p-3 rounded border mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">No. Invoice:</span>
+                                <span class="fw-bold"><%= activeJob.invoiceNumber %></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Kendaraan:</span>
+                                <span class="fw-bold text-primary"><%= activeJob.vehicleLicense %></span>
+                            </div>
+                            <hr>
+                            <p class="small text-muted mb-2">Deskripsi Kerja:</p>
+                            <p class="fw-bold mb-3"><%= activeJob.description %></p>
+                            
+                            <button onclick="finishWork('<%= activeJob._id %>')" class="btn btn-success w-100 py-2">
+                                <i class="fas fa-check-circle me-1"></i> SELESAIKAN PEKERJAAN
+                            </button>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <i class="fas fa-user-clock fa-3x text-light mb-3"></i>
+                            <p class="text-muted">Kamu tidak memiliki pekerjaan aktif.</p>
+                        </div>
+                    <% } %>
+                    
+                    <div class="mt-auto">
+                        <button onclick="window.location.reload()" class="btn btn-outline-secondary btn-sm w-100">
+                            <i class="fas fa-sync-alt me-1"></i> Update Terakhir Bengkel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-secondary text-white py-3">
+                        <h5 class="card-title mb-0"><i class="fas fa-history me-2"></i>Riwayat Pekerjaan Saya (Selesai)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Tanggal Selesai</th>
+                                        <th>No. Invoice</th>
+                                        <th>Kendaraan</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (completedJobs.length > 0) { %>
+                                        <% completedJobs.forEach(job => { %>
+                                            <tr>
+                                                <td class="small">
+                                                    <%= job.completedAt ? new Date(job.completedAt).toLocaleString('id-ID') : '-' %>
+                                                </td>
+                                                <td><strong><%= job.invoiceNumber %></strong></td>
+                                                <td><%= job.vehicleLicense %></td>
+                                                <td>
+                                                    <span class="badge bg-success text-white">Selesai</span>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="4" class="text-center py-3 text-muted">Belum ada riwayat pekerjaan selesai.</td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>    
+    </div>
+</div>
+
+<script>
+async function finishWork(jobId) {
+    if (!confirm('Apakah pekerjaan ini sudah benar-benar selesai?')) return;
+
+    try {
+        const response = await fetch(`/api/jobs/finish/${jobId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Selamat! Pekerjaan telah diselesaikan.');
+            window.location.reload();
+        } else {
+            alert('Gagal: ' + result.message);
+        }
+    } catch (err) {
+        alert('Terjadi kesalahan koneksi');
+    }
+}
+</script>

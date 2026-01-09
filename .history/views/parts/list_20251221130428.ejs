@@ -1,0 +1,51 @@
+<h1><%= title %></h1>
+<p>Berikut adalah daftar suku cadang yang tersedia di bengkel.</p>
+
+<a href="/parts/add" class="btn btn-success mb-3">Tambah Suku Cadang Baru</a>
+
+<% if (parts.length > 0) { %>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Kode</th>
+                    <th>Nama Suku Cadang</th>
+                    <th>Stok</th>
+                    <th>Harga Beli (Rp)</th>
+                    <th>Harga Jual (Rp)</th>
+                    <th>Supplier</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (typeof parts !== 'undefined' && parts.length > 0) { %>
+                    <% parts.forEach(part => { %> <tr>
+                            <td><%= part.code %></td>
+                            <td><%= part.name %></td>
+                            <td><%= part.stock %></td>
+                            <td>Rp <%= (part.price || 0).toLocaleString('id-ID') %></td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="/parts/edit/<%= part._id %>" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="/parts/delete/<%= part._id %>" method="POST" onsubmit="return confirm('Hapus?')">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr><td colspan="5" class="text-center">Data Kosong</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+<% } else { %>
+    <div class="alert alert-info" role="alert">
+        Belum ada data suku cadang yang tersimpan.
+    </div>
+<% } %>

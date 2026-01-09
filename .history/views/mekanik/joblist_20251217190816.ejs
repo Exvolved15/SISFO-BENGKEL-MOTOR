@@ -1,0 +1,102 @@
+<script>
+    /**
+     * Fungsi untuk mengirim permintaan PUT ke server untuk mengupdate status pekerjaan.
+     * @param {string} jobId - ID pekerjaan di MongoDB.
+     * @param {string} newStatus - Status baru ('in_progress' atau 'completed').
+     */
+    async function updateStatus(jobId, newStatus) {
+        if (!confirm(`Apakah Anda yakin ingin mengubah status pekerjaan ${jobId} menjadi "${newStatus}"?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/jobs/${jobId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Server akan menggunakan cookie 'token' untuk otentikasi
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(`Pekerjaan berhasil diperbarui: ${data.message}`);
+                // Refresh halaman untuk menampilkan status terbaru
+                window.location.reload(); 
+            } else {
+                alert(`Gagal memperbarui status: ${data.message || 'Terjadi kesalahan server.'}`);
+            }
+
+        } catch (error) {
+            console.error('Error saat mengirim update status:', error);
+            alert('Terjadi kesalahan jaringan.');
+        }
+    }
+    
+    // Opsional: Tambahkan Event Listener jika tombol tidak langsung menggunakan onclick
+    document.addEventListener('DOMContentLoaded', () => {
+        // Contoh: jika Anda punya tombol dengan kelas 'btn-start-job'
+        // document.querySelectorAll('.btn-start-job').forEach(button => {
+        //     button.addEventListener('click', (e) => {
+        //         const jobId = e.target.dataset.jobId;
+        //         updateStatus(jobId, 'in_progress');
+        //     });
+        // });
+    });
+</script>
+
+<div class="container mt-4">
+    <h2>Tugas Saya</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>No. Plat</th>
+                    <th>Pelanggan</th>
+                    <th>Model</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% jobs.forEach(job => { %>
+                    <tr>
+                        <td><%= job.vehicle.licensePlate %></td>
+                        <td><%= job.customer.name %></td>
+                        <td><%= job.notes %></td>
+                        <td>
+                            <button class="btn btn-success btn-sm" onclick="finishJob('<%= job._id %>')">
+                                Selesaikan Pekerjaan
+                            </button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    async function finishJob(jobId) {
+        if (!confirm('Apakah pekerjaan ini sudah benar-benar selesai?')) return;
+    
+        try {
+            const res = await fetch(`/api/jobs/${jobId}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'completed' })
+            });
+    
+            if (res.ok) {
+                alert('Pekerjaan selesai! Data akan dikirim ke Kasir untuk pembayaran.');
+                location.reload(); // Refresh halaman agar job yang selesai hilang dari list aktif
+            } else {
+                alert('Gagal memperbarui status.');
+            }
+        } catch (err) {
+            alert('Kesalahan jaringan.');
+        }
+    }
+    </script>

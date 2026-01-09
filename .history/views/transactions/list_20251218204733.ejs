@@ -1,0 +1,46 @@
+<h1><%= title %></h1>
+<p>Daftar riwayat penjualan suku cadang dan jasa servis.</p>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1><%= title %></h1>
+        <a href="/transactions/add" class="btn btn-primary">Buat Transaksi Baru</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Invoice</th>
+                        <th>Pelanggan</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (typeof transactions !== 'undefined' && transactions.length > 0) { %>
+                        <% transactions.forEach(trx => { %>
+                            <tr>
+                                <td><%= trx.invoiceNumber %></td>
+                                <td><%= trx.customer ? trx.customer.name : 'N/A' %></td>
+                                <td>Rp <%= trx.totalAmount.toLocaleString('id-ID') %></td>
+                                <td>
+                                    <span class="badge bg-<%= trx.status === 'completed' ? 'success' : 'warning' %>">
+                                        <%= trx.status %>
+                                    </span>
+                                </td>
+                            </tr>
+                        <% }) %> <% } else { %> <tr>
+                            <td colspan="4" class="text-center">Belum ada riwayat transaksi.</td>
+                        </tr>
+                    <% } %> </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<% } else { %>
+    <div class="alert alert-warning" role="alert">
+        Belum ada riwayat transaksi yang tersimpan.
+    </div>
+<% } %>

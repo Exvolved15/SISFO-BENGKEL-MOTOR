@@ -1,0 +1,117 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="<%= (typeof user !== 'undefined' && user) ? '/dashboard-redirect' : '/' %>">
+            <div class="bg-success text-white rounded-3 p-1 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                <i class="fas fa-screwdriver-wrench"></i>
+            </div>
+            <span>Sisfo Bengkel</span>
+        </a>
+
+        <div class="d-flex align-items-center">
+            <ul class="nav flex-row align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-white position-relative <%= (typeof activePage !== 'undefined' && activePage === 'home') ? 'fw-bold active-link' : 'opacity-75' %>" 
+                       href="<%= (typeof user !== 'undefined' && user) ? '/dashboard-redirect' : '/' %>">
+                       Overview
+                    </a>
+                </li>
+                <li class="nav-item border-start border-secondary ms-2 ps-2">
+                    <a class="nav-link px-2 text-white position-relative <%= (typeof activePage !== 'undefined' && activePage === 'about') ? 'fw-bold active-link' : 'opacity-75' %>" 
+                       href="/about">
+                       About
+                    </a>
+                </li>
+                
+                <% if (typeof user === 'undefined' || !user) { %>
+                <li class="nav-item ms-3">
+                    <a href="/login" class="btn btn-success btn-sm px-3 rounded-pill fw-bold shadow-sm">
+                        <i class="fas fa-sign-in-alt me-1"></i>Masuk
+                    </a>
+                </li>
+                <% } %>
+            </ul>
+        </div>
+
+        <% if (typeof user !== 'undefined' && user) { %>
+            <button class="navbar-toggler border-0 shadow-none ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navInternal">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        <% } %>
+
+        <div class="collapse navbar-collapse" id="navInternal">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <% if (typeof user !== 'undefined' && user) { %>
+                    
+                    <% if (user.role === 'admin' || user.role === 'kasir') { %>
+                        <li class="nav-item"><a class="nav-link small" href="/parts"><i class="fas fa-box me-1"></i>Suku Cadang</a></li>
+                        <li class="nav-item"><a class="nav-link small" href="/services"><i class="fas fa-concierge-bell me-1"></i>Jasa</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle small" href="#" id="dropTrans" data-bs-toggle="dropdown">Transaksi</a>
+                            <ul class="dropdown-menu dropdown-menu-dark shadow-lg border-secondary rounded-3 mt-lg-2">
+                                <li><a class="dropdown-item small" href="/transactions/add"><i class="fas fa-plus-circle me-2"></i>Baru</a></li>
+                                <li><a class="dropdown-item small" href="/transactions"><i class="fas fa-history me-2"></i>Riwayat</a></li>
+                            </ul>
+                        </li>
+                    <% } %>
+
+                    <% if (user.role === 'mekanik') { %>
+                        <li class="nav-item">
+                            <a class="nav-link small" href="/api/jobs/mechanic/dashboard"><i class="fas fa-tasks me-1"></i>Tugas Saya</a>
+                        </li>
+                    <% } %>
+
+                    <li class="nav-item dropdown ms-lg-3 mt-3 mt-lg-0 border-top border-secondary pt-3 pt-lg-0">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center profile-pill bg-secondary bg-opacity-25 px-3 py-1 rounded-pill" 
+                           href="#" id="userProfileDrop" role="button" data-bs-toggle="dropdown">
+                            
+                            <% if (user.profileImage && user.profileImage !== '/img/default-avatar.png') { %>
+                                <img src="<%= user.profileImage %>" class="rounded-circle me-2 border border-2 border-success" style="width: 26px; height: 26px; object-fit: cover;">
+                            <% } else { %>
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 26px; height: 26px; font-weight: bold; font-size: 0.75rem;">
+                                    <%= user.name.charAt(0).toUpperCase() %>
+                                </div>
+                            <% } %>
+                            
+                            <span class="small text-white"><%= user.name.split(' ')[0] %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-secondary mt-lg-2 rounded-3">
+                            <li class="px-3 py-2 text-center">
+                                <small class="text-muted text-uppercase d-block mb-1" style="font-size: 0.6rem; letter-spacing: 1px;">Akses: <%= user.role %></small>
+                                <div class="badge bg-success bg-opacity-10 text-success rounded-pill px-2" style="font-size: 0.65rem;">Online</div>
+                            </li>
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li><a class="dropdown-item small" href="/users/edit/<%= user._id %>"><i class="fas fa-user-edit me-2"></i>Edit Profil</a></li>
+                            <li><a class="dropdown-item small text-danger" id="logout-link" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Keluar</a></li>
+                        </ul>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<style>
+    /* Styling khusus agar Overview & About terlihat modern */
+    .active-link::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 8px;
+        right: 8px;
+        height: 3px;
+        background: #2ecc71; /* Emerald Green */
+        border-radius: 10px;
+    }
+    .profile-pill {
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+    .profile-pill:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(46, 204, 113, 0.4);
+    }
+    .dropdown-item:hover {
+        background-color: #2ecc71;
+        color: white !important;
+    }
+</style>
